@@ -1,5 +1,13 @@
+using backend.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 // je cree mon serveur
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite("Data Source=app.db"));
+    //ajoute l’outil “base de données sqlite” basé sur AppDbContext
+
 
 builder.Services.AddCors(options =>
 {//j’autorise Angular à me parler
