@@ -6,6 +6,8 @@ public class User //ranger cette classe dans l espace logique backend.Mode
 
     public string Email { get; set; } = string.Empty;
 
+    public string Name { get; set; } = string.Empty;
+
     public string PasswordHash { get; set; } = string.Empty;
 
     public string Role { get; set; } = "Standard";
