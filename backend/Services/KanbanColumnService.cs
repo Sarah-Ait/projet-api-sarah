@@ -6,10 +6,14 @@ namespace backend.Services
     public class KanbanColumnService : IKanbanColumnService
     {
         private readonly IKanbanColumnRepository _kanbanColumnRepository;
+        private readonly IUserRepository _userRepository;
 
-        public KanbanColumnService(IKanbanColumnRepository kanbanColumnRepository)
+        public KanbanColumnService(
+            IKanbanColumnRepository kanbanColumnRepository,
+            IUserRepository userRepository)
         {
             _kanbanColumnRepository = kanbanColumnRepository;
+            _userRepository = userRepository;
         }
 
         public async Task<List<KanbanColumn>> GetAllKanbanColumnsAsync()
@@ -30,6 +34,18 @@ namespace backend.Services
             }
 
             if (kanbanColumn.Name.Length > 100)
+            {
+                return null;
+            }
+
+            if (kanbanColumn.Order < 0)
+            {
+                return null;
+            }
+
+            var user = await _userRepository.GetByIdAsync(kanbanColumn.UserId);
+
+            if (user == null)
             {
                 return null;
             }

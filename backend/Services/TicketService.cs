@@ -6,10 +6,17 @@ namespace backend.Services
     public class TicketService : ITicketService
     {
         private readonly ITicketRepository _ticketRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IKanbanColumnRepository _kanbanColumnRepository;
 
-        public TicketService(ITicketRepository ticketRepository)
+        public TicketService(
+            ITicketRepository ticketRepository,
+            IUserRepository userRepository,
+            IKanbanColumnRepository kanbanColumnRepository)
         {
             _ticketRepository = ticketRepository;
+            _userRepository = userRepository;
+            _kanbanColumnRepository = kanbanColumnRepository;
         }
 
         public async Task<List<Ticket>> GetAllTicketsAsync()
@@ -30,6 +37,19 @@ namespace backend.Services
             }
 
             if (ticket.Title.Length > 100)
+            {
+                return null;
+            }
+            var assignedUser = await _userRepository.GetByIdAsync(ticket.AssignedUserId);
+
+            if (assignedUser == null)
+            {
+                return null;
+            }
+
+            var kanbanColumn = await _kanbanColumnRepository.GetByIdAsync(ticket.KanbanColumnId);
+
+            if (kanbanColumn == null)
             {
                 return null;
             }
