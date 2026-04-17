@@ -24,9 +24,11 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod();
     });
 });
-
+//addscoped pour garder la meme instance pendant une requete
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IKanbanColumnRepository, KanbanColumnRepository>();
+builder.Services.AddScoped<IKanbanColumnService, KanbanColumnService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
