@@ -10,5 +10,7 @@ public class KanbanColumn
 
     public int UserId { get; set; }
 
-    public User? User { get; set; } // on cree un lien vers user 
+    public User? User { get; set; }
+
+    public List<Ticket> Tickets { get; set; } = new();
 }

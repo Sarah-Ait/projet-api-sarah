@@ -1,6 +1,6 @@
 namespace backend.Models;
 
-public class User //ranger cette classe dans l espace logique backend.Mode
+public class User
 {
     public int Id { get; set; }
 
@@ -11,4 +11,8 @@ public class User //ranger cette classe dans l espace logique backend.Mode
     public string PasswordHash { get; set; } = string.Empty;
 
     public string Role { get; set; } = "Standard";
+
+    public List<KanbanColumn> KanbanColumns { get; set; } = new();
+
+    public List<Ticket> AssignedTickets { get; set; } = new();
 }
