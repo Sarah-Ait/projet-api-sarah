@@ -6,17 +6,14 @@ using backend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// je crée mon serveur
-
 builder.Services.AddControllers();
+builder.Services.AddProblemDetails(); 
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=app.db"));
-// ajoute l’outil “base de données sqlite” basé sur AppDbContext
 
 builder.Services.AddCors(options =>
 {
-    // j’autorise Angular à me parler
     options.AddPolicy("AllowAngular", policy =>
     {
         policy.WithOrigins("http://localhost:4200")
@@ -24,7 +21,7 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod();
     });
 });
-//addscoped pour garder la meme instance pendant une requete
+
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IKanbanColumnRepository, KanbanColumnRepository>();
@@ -32,7 +29,9 @@ builder.Services.AddScoped<IKanbanColumnService, KanbanColumnService>();
 builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 builder.Services.AddScoped<ITicketService, TicketService>();
 
+//explorer les endpoints (infos sur l api routes methodes ..) 
 builder.Services.AddEndpointsApiExplorer();
+//genere le doc swagger
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
@@ -43,8 +42,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors("AllowAngular"); // activer l’autorisation
+app.UseExceptionHandler(); //active l’interception des exceptions
+
+app.UseCors("AllowAngular");
 
 app.MapControllers();
 
-app.Run(); // je lance le serveur
+app.Run();

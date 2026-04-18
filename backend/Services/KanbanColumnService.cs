@@ -33,7 +33,7 @@ namespace backend.Services
 
             if (user == null)
             {
-                throw new Exception("User not found");
+                return null;
             }
 
             var kanbanColumn = new KanbanColumn

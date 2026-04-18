@@ -57,6 +57,11 @@ namespace backend.Controllers
         public async Task<ActionResult<KanbanColumnResponseDto>> CreateKanbanColumn(CreateKanbanColumnDto createKanbanColumnDto)
         {
             var createdKanbanColumn = await _kanbanColumnService.CreateKanbanColumnAsync(createKanbanColumnDto);
+            if (createdKanbanColumn == null)
+            {
+                return NotFound(new { message = "User not found" });
+            }
+
 
             var response = new KanbanColumnResponseDto
             {
