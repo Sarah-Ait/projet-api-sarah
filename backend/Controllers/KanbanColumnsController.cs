@@ -17,23 +17,40 @@ namespace backend.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<KanbanColumn>>> GetAllKanbanColumns()
+        public async Task<ActionResult<IEnumerable<KanbanColumnResponseDto>>> GetAllKanbanColumns()
         {
             var kanbanColumns = await _kanbanColumnService.GetAllKanbanColumnsAsync();
-            return Ok(kanbanColumns);
+
+            var response = kanbanColumns.Select(kanbanColumn => new KanbanColumnResponseDto
+            {
+                Id = kanbanColumn.Id,
+                Name = kanbanColumn.Name,
+                Order = kanbanColumn.Order,
+                UserId = kanbanColumn.UserId
+            });
+
+            return Ok(response);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<KanbanColumn>> GetKanbanColumnById(int id)
+        public async Task<ActionResult<KanbanColumnResponseDto>> GetKanbanColumnById(int id)
         {
             var kanbanColumn = await _kanbanColumnService.GetKanbanColumnByIdAsync(id);
 
             if (kanbanColumn == null)
             {
-                return NotFound(new { message = "Colonne kanban non trouvée" });
+                return NotFound();
             }
 
-            return Ok(kanbanColumn);
+            var response = new KanbanColumnResponseDto
+            {
+                Id = kanbanColumn.Id,
+                Name = kanbanColumn.Name,
+                Order = kanbanColumn.Order,
+                UserId = kanbanColumn.UserId
+            };
+
+            return Ok(response);
         }
 
         [HttpPost]
