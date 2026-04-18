@@ -17,32 +17,56 @@ namespace backend.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<User>>> GetAllUsers()
+        public async Task<ActionResult<IEnumerable<UserResponseDto>>> GetAllUsers()
         {
             var users = await _userService.GetAllUsersAsync();
-            return Ok(users);
+
+            var response = users.Select(user => new UserResponseDto
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email,
+                Role = user.Role
+            });
+
+            return Ok(response);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUserById(int id)
+        public async Task<ActionResult<UserResponseDto>> GetUserById(int id)
         {
             var user = await _userService.GetUserByIdAsync(id);
 
             if (user == null)
             {
-                return NotFound(new { message = "Utilisateur non trouvé" });
+                return NotFound();
             }
 
-            return Ok(user);
-            // ok 
+            var response = new UserResponseDto
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email,
+                Role = user.Role
+            };
+
+            return Ok(response);
         }
 
         [HttpPost]
-    public async Task<ActionResult<User>> CreateUser(CreateUserDto createUserDto)
-    {
-        var createdUser = await _userService.CreateUserAsync(createUserDto);
+        public async Task<ActionResult<UserResponseDto>> CreateUser(CreateUserDto createUserDto)
+        {
+            var createdUser = await _userService.CreateUserAsync(createUserDto);
 
-        return CreatedAtAction(nameof(GetUserById), new { id = createdUser.Id }, createdUser);
-    }
+            var response = new UserResponseDto
+            {
+                Id = createdUser.Id,
+                Name = createdUser.Name,
+                Email = createdUser.Email,
+                Role = createdUser.Role
+            };
+
+            return CreatedAtAction(nameof(GetUserById), new { id = response.Id }, response);
+        }
     }
 }
