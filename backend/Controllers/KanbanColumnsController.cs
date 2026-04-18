@@ -37,11 +37,19 @@ namespace backend.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<KanbanColumn>> CreateKanbanColumn(CreateKanbanColumnDto createKanbanColumnDto)
+        public async Task<ActionResult<KanbanColumnResponseDto>> CreateKanbanColumn(CreateKanbanColumnDto createKanbanColumnDto)
         {
             var createdKanbanColumn = await _kanbanColumnService.CreateKanbanColumnAsync(createKanbanColumnDto);
 
-            return CreatedAtAction(nameof(GetKanbanColumnById), new { id = createdKanbanColumn.Id }, createdKanbanColumn);
+            var response = new KanbanColumnResponseDto
+            {
+                Id = createdKanbanColumn.Id,
+                Name = createdKanbanColumn.Name,
+                Order = createdKanbanColumn.Order,
+                UserId = createdKanbanColumn.UserId
+            };
+
+            return CreatedAtAction(nameof(GetKanbanColumnById), new { id = response.Id }, response);
         }
     }
 }
