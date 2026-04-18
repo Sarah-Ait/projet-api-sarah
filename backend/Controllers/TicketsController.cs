@@ -17,31 +17,62 @@ namespace backend.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Ticket>>> GetAllTickets()
+        public async Task<ActionResult<IEnumerable<TicketResponseDto>>> GetAllTickets()
         {
             var tickets = await _ticketService.GetAllTicketsAsync();
-            return Ok(tickets);
+
+            var response = tickets.Select(ticket => new TicketResponseDto
+            {
+                Id = ticket.Id,
+                Title = ticket.Title,
+                Description = ticket.Description,
+                TimeSpentHours = ticket.TimeSpentHours,
+                AssignedUserId = ticket.AssignedUserId,
+                KanbanColumnId = ticket.KanbanColumnId
+            });
+
+            return Ok(response);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Ticket>> GetTicketById(int id)
+        public async Task<ActionResult<TicketResponseDto>> GetTicketById(int id)
         {
             var ticket = await _ticketService.GetTicketByIdAsync(id);
 
             if (ticket == null)
             {
-                return NotFound(new { message = "Ticket non trouvé" });
+                return NotFound();
             }
 
-            return Ok(ticket);
+            var response = new TicketResponseDto
+            {
+                Id = ticket.Id,
+                Title = ticket.Title,
+                Description = ticket.Description,
+                TimeSpentHours = ticket.TimeSpentHours,
+                AssignedUserId = ticket.AssignedUserId,
+                KanbanColumnId = ticket.KanbanColumnId
+            };
+
+            return Ok(response);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Ticket>> CreateTicket(CreateTicketDto createTicketDto)
+        public async Task<ActionResult<TicketResponseDto>> CreateTicket(CreateTicketDto createTicketDto)
         {
             var createdTicket = await _ticketService.CreateTicketAsync(createTicketDto);
 
-            return CreatedAtAction(nameof(GetTicketById), new { id = createdTicket.Id }, createdTicket);
+            var response = new TicketResponseDto
+            {
+                Id = createdTicket.Id,
+                Title = createdTicket.Title,
+                Description = createdTicket.Description,
+                TimeSpentHours = createdTicket.TimeSpentHours,
+                AssignedUserId = createdTicket.AssignedUserId,
+                KanbanColumnId = createdTicket.KanbanColumnId
+            };
+
+            return CreatedAtAction(nameof(GetTicketById), new { id = response.Id }, response);
         }
     }
 }
