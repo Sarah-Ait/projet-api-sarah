@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using backend.Interfaces;
 using backend.Models;
+using backend.DTOs;
 
 namespace backend.Controllers
 {
@@ -37,16 +38,11 @@ namespace backend.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<User>> CreateUser(User user)
-        {
-            var createdUser = await _userService.CreateUserAsync(user);
+    public async Task<ActionResult<User>> CreateUser(CreateUserDto createUserDto)
+    {
+        var createdUser = await _userService.CreateUserAsync(createUserDto);
 
-            if (createdUser == null)
-            {
-                return BadRequest(new { message = "Données utilisateur invalides" });
-            }
-
-            return CreatedAtAction(nameof(GetUserById), new { id = createdUser.Id }, createdUser);// renvoie le status 201 Created concretement c est la reponse complete 
-        }
+        return CreatedAtAction(nameof(GetUserById), new { id = createdUser.Id }, createdUser);
+    }
     }
 }

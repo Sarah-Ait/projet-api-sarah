@@ -1,6 +1,6 @@
 using backend.Interfaces;
 using backend.Models;
-
+using backend.DTOs;
 
 namespace backend.Services
 {
@@ -23,34 +23,17 @@ namespace backend.Services
             return await _userRepository.GetByIdAsync(id);
         }
 
-        public async Task<User?> CreateUserAsync(User user)
-        {
-            if (string.IsNullOrWhiteSpace(user.Name))
-            {
-                return null;
-            }
+       public async Task<User> CreateUserAsync(CreateUserDto createUserDto)
+{
+    var user = new User
+    {
+        Name = createUserDto.Name,
+        Email = createUserDto.Email,
+        PasswordHash = createUserDto.PasswordHash,
+        Role = "Standard"
+    };
 
-            if (string.IsNullOrWhiteSpace(user.Email))
-            {
-                return null;
-            }
-
-            if (!user.Email.Contains("@"))
-            {
-                return null;
-            }
-
-            if (user.Name.Length > 100)
-            {
-                return null;
-            }
-
-            if (user.Email.Length > 150)
-            {
-                return null;
-            }
-
-            return await _userRepository.CreateAsync(user);
-        }
+    return await _userRepository.CreateAsync(user);
+}
     }
 }

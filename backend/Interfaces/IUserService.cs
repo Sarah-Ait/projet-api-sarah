@@ -6,6 +6,8 @@ namespace backend.Interfaces
     {
         Task<List<User>> GetAllUsersAsync();
         Task<User?> GetUserByIdAsync(int id);
-        Task<User?> CreateUserAsync(User user);
+        Task<User?> CreateUserAsync(CreateUserDto createUserDto);
+
+        Task<bool> DeleteUserAsync(int id);
     }
 }
