@@ -20,6 +20,10 @@ namespace backend.Controllers
         public async Task<ActionResult<IEnumerable<TicketResponseDto>>> GetAllTickets()
         {
             var tickets = await _ticketService.GetAllTicketsAsync();
+            if (createdTicket == null)
+            {
+                return NotFound(new { message = "Assigned user or kanban column not found" });
+            }
 
             var response = tickets.Select(ticket => new TicketResponseDto
             {

@@ -35,13 +35,13 @@ namespace backend.Services
             var user = await _userRepository.GetByIdAsync(createTicketDto.AssignedUserId);
             if (user == null)
             {
-                throw new Exception("Assigned user not found");
+                return null;
             }
 
             var kanbanColumn = await _kanbanColumnRepository.GetByIdAsync(createTicketDto.KanbanColumnId);
             if (kanbanColumn == null)
             {
-                throw new Exception("Kanban column not found");
+                return null;
             }
 
             var ticket = new Ticket
