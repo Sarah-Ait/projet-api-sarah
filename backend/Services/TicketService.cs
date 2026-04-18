@@ -1,5 +1,6 @@
 using backend.Interfaces;
 using backend.Models;
+using backend.DTOs;
 
 namespace backend.Services
 {
@@ -29,30 +30,28 @@ namespace backend.Services
             return await _ticketRepository.GetByIdAsync(id);
         }
 
-        public async Task<Ticket?> CreateTicketAsync(Ticket ticket)
+        public async Task<Ticket> CreateTicketAsync(CreateTicketDto createTicketDto)
         {
-            if (string.IsNullOrWhiteSpace(ticket.Title))
+            var user = await _userRepository.GetByIdAsync(createTicketDto.AssignedUserId);
+            if (user == null)
             {
-                return null;
+                throw new Exception("Assigned user not found");
             }
 
-            if (ticket.Title.Length > 100)
-            {
-                return null;
-            }
-            var assignedUser = await _userRepository.GetByIdAsync(ticket.AssignedUserId);
-
-            if (assignedUser == null)
-            {
-                return null;
-            }
-
-            var kanbanColumn = await _kanbanColumnRepository.GetByIdAsync(ticket.KanbanColumnId);
-
+            var kanbanColumn = await _kanbanColumnRepository.GetByIdAsync(createTicketDto.KanbanColumnId);
             if (kanbanColumn == null)
             {
-                return null;
+                throw new Exception("Kanban column not found");
             }
+
+            var ticket = new Ticket
+            {
+                Title = createTicketDto.Title,
+                Description = createTicketDto.Description,
+                TimeSpentHours = createTicketDto.TimeSpentHours,
+                AssignedUserId = createTicketDto.AssignedUserId,
+                KanbanColumnId = createTicketDto.KanbanColumnId
+            };
 
             return await _ticketRepository.CreateAsync(ticket);
         }

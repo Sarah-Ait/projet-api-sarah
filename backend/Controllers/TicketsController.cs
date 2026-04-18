@@ -36,14 +36,9 @@ namespace backend.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Ticket>> CreateTicket(Ticket ticket)
+        public async Task<ActionResult<Ticket>> CreateTicket(CreateTicketDto createTicketDto)
         {
-            var createdTicket = await _ticketService.CreateTicketAsync(ticket);
-
-            if (createdTicket == null)
-            {
-                return BadRequest(new { message = "Données du ticket invalides" });
-            }
+            var createdTicket = await _ticketService.CreateTicketAsync(createTicketDto);
 
             return CreatedAtAction(nameof(GetTicketById), new { id = createdTicket.Id }, createdTicket);
         }

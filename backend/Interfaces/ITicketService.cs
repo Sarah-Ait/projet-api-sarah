@@ -6,6 +6,6 @@ namespace backend.Interfaces
     {
         Task<List<Ticket>> GetAllTicketsAsync();
         Task<Ticket?> GetTicketByIdAsync(int id);
-        Task<Ticket?> CreateTicketAsync(Ticket ticket);
+        Task<Ticket> CreateTicketAsync(CreateTicketDto createTicketDto);
     }
 }
