@@ -1,5 +1,6 @@
 using backend.Interfaces;
 using backend.Models;
+using backend.DTOs;
 
 namespace backend.Services
 {
@@ -26,29 +27,21 @@ namespace backend.Services
             return await _kanbanColumnRepository.GetByIdAsync(id);
         }
 
-        public async Task<KanbanColumn?> CreateKanbanColumnAsync(KanbanColumn kanbanColumn)
+        public async Task<KanbanColumn> CreateKanbanColumnAsync(CreateKanbanColumnDto createKanbanColumnDto)
         {
-            if (string.IsNullOrWhiteSpace(kanbanColumn.Name))
-            {
-                return null;
-            }
-
-            if (kanbanColumn.Name.Length > 100)
-            {
-                return null;
-            }
-
-            if (kanbanColumn.Order < 0)
-            {
-                return null;
-            }
-
-            var user = await _userRepository.GetByIdAsync(kanbanColumn.UserId);
+            var user = await _userRepository.GetByIdAsync(createKanbanColumnDto.UserId);
 
             if (user == null)
             {
-                return null;
+                throw new Exception("User not found");
             }
+
+            var kanbanColumn = new KanbanColumn
+            {
+                Name = createKanbanColumnDto.Name,
+                Order = createKanbanColumnDto.Order,
+                UserId = createKanbanColumnDto.UserId
+            };
 
             return await _kanbanColumnRepository.CreateAsync(kanbanColumn);
         }

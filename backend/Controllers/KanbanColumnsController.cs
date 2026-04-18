@@ -36,14 +36,9 @@ namespace backend.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<KanbanColumn>> CreateKanbanColumn(KanbanColumn kanbanColumn)
+        public async Task<ActionResult<KanbanColumn>> CreateKanbanColumn(CreateKanbanColumnDto createKanbanColumnDto)
         {
-            var createdKanbanColumn = await _kanbanColumnService.CreateKanbanColumnAsync(kanbanColumn);
-
-            if (createdKanbanColumn == null)
-            {
-                return BadRequest(new { message = "Données de colonne kanban invalides" });
-            }
+            var createdKanbanColumn = await _kanbanColumnService.CreateKanbanColumnAsync(createKanbanColumnDto);
 
             return CreatedAtAction(nameof(GetKanbanColumnById), new { id = createdKanbanColumn.Id }, createdKanbanColumn);
         }
