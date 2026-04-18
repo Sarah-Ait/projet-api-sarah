@@ -23,17 +23,30 @@ namespace backend.Services
             return await _userRepository.GetByIdAsync(id);
         }
 
-       public async Task<User> CreateUserAsync(CreateUserDto createUserDto)
-{
-    var user = new User
-    {
-        Name = createUserDto.Name,
-        Email = createUserDto.Email,
-        PasswordHash = createUserDto.PasswordHash,
-        Role = "Standard"
-    };
+         public async Task<User> CreateUserAsync(CreateUserDto createUserDto)
+        {
+            var user = new User
+            {
+                Name = createUserDto.Name,
+                Email = createUserDto.Email,
+                PasswordHash = createUserDto.PasswordHash,
+                Role = "Standard"
+            };
 
-    return await _userRepository.CreateAsync(user);
-}
+            return await _userRepository.CreateAsync(user);
+        }
+
+        public async Task<bool> DeleteUserAsync(int id)
+        {
+            var existingUser = await _userRepository.GetByIdAsync(id);
+
+            if (existingUser == null)
+            {
+                return false;
+            }
+
+            await _userRepository.DeleteAsync(id);
+            return true;
+        }
     }
 }
