@@ -1,11 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using backend.Interfaces;
-using backend.Models;
 using backend.DTOs;
 
 namespace backend.Controllers
 {
-    [ApiController] 
+    [ApiController]
     [Route("api/[controller]")]
     public class TicketsController : ControllerBase
     {
@@ -20,22 +19,7 @@ namespace backend.Controllers
         public async Task<ActionResult<IEnumerable<TicketResponseDto>>> GetAllTickets()
         {
             var tickets = await _ticketService.GetAllTicketsAsync();
-            if (createdTicket == null)
-            {
-                return NotFound(new { message = "Assigned user or kanban column not found" });
-            }
-
-            var response = tickets.Select(ticket => new TicketResponseDto
-            {
-                Id = ticket.Id,
-                Title = ticket.Title,
-                Description = ticket.Description,
-                TimeSpentHours = ticket.TimeSpentHours,
-                AssignedUserId = ticket.AssignedUserId,
-                KanbanColumnId = ticket.KanbanColumnId
-            });
-
-            return Ok(response);
+            return Ok(tickets);
         }
 
         [HttpGet("{id}")]
@@ -45,20 +29,10 @@ namespace backend.Controllers
 
             if (ticket == null)
             {
-                return NotFound();
+                return NotFound(new { message = "Ticket not found." });
             }
 
-            var response = new TicketResponseDto
-            {
-                Id = ticket.Id,
-                Title = ticket.Title,
-                Description = ticket.Description,
-                TimeSpentHours = ticket.TimeSpentHours,
-                AssignedUserId = ticket.AssignedUserId,
-                KanbanColumnId = ticket.KanbanColumnId
-            };
-
-            return Ok(response);
+            return Ok(ticket);
         }
 
         [HttpPost]
@@ -66,17 +40,25 @@ namespace backend.Controllers
         {
             var createdTicket = await _ticketService.CreateTicketAsync(createTicketDto);
 
-            var response = new TicketResponseDto
+            if (createdTicket == null)
             {
-                Id = createdTicket.Id,
-                Title = createdTicket.Title,
-                Description = createdTicket.Description,
-                TimeSpentHours = createdTicket.TimeSpentHours,
-                AssignedUserId = createdTicket.AssignedUserId,
-                KanbanColumnId = createdTicket.KanbanColumnId
-            };
+                return BadRequest(new { message = "Assigned user or kanban column not found." });
+            }
 
-            return CreatedAtAction(nameof(GetTicketById), new { id = response.Id }, response);
+            return CreatedAtAction(nameof(GetTicketById), new { id = createdTicket.Id }, createdTicket);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteTicket(int id)
+        {
+            var deleted = await _ticketService.DeleteTicketAsync(id);
+
+            if (!deleted)
+            {
+                return NotFound(new { message = "Ticket not found." });
+            }
+
+            return NoContent();
         }
     }
 }
