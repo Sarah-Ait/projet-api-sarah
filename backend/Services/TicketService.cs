@@ -55,5 +55,18 @@ namespace backend.Services
 
             return await _ticketRepository.CreateAsync(ticket);
         }
+
+        public async Task<bool> DeleteTicketAsync(int id)
+        {
+            var existingTicket = await _ticketRepository.GetByIdAsync(id);
+
+            if (existingTicket == null)
+            {
+                return false;
+            }
+
+            await _ticketRepository.DeleteAsync(id);
+            return true;
+        }
     }
 }

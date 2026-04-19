@@ -30,5 +30,16 @@ namespace backend.Repositories
             await _context.SaveChangesAsync();
             return kanbanColumn;
         }
+
+        public async Task DeleteAsync(int id)
+        {
+            var kanbanColumn = await _context.KanbanColumns.FindAsync(id);
+
+            if (kanbanColumn != null)
+            {
+                _context.KanbanColumns.Remove(kanbanColumn);
+                await _context.SaveChangesAsync();
+            }
+        }
     }
 }

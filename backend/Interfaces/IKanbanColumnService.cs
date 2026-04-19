@@ -8,5 +8,6 @@ namespace backend.Interfaces
         Task<List<KanbanColumn>> GetAllKanbanColumnsAsync();
         Task<KanbanColumn?> GetKanbanColumnByIdAsync(int id);
         Task<KanbanColumn?> CreateKanbanColumnAsync(CreateKanbanColumnDto createKanbanColumnDto);
+        Task<bool> DeleteKanbanColumnAsync(int id);
     }
 }
