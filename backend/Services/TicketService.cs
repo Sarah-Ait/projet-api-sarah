@@ -1,6 +1,7 @@
 using backend.Interfaces;
 using backend.Models;
 using backend.DTOs;
+using backend.Exceptions;
 
 namespace backend.Services
 {
@@ -39,29 +40,32 @@ namespace backend.Services
             return tickets.Select(MapToTicketResponseDto).ToList();
         }
 
-        public async Task<TicketResponseDto?> GetTicketByIdAsync(int id)
+        public async Task<TicketResponseDto> GetTicketByIdAsync(int id)
         {
             var ticket = await _ticketRepository.GetByIdAsync(id);
             
             if (ticket == null)
-                return null;
+                throw new NotFoundException($"Ticket with ID {id} not found");
 
             return MapToTicketResponseDto(ticket);
         }
 
-        public async Task<TicketResponseDto?> CreateTicketAsync(CreateTicketDto createTicketDto)
+        public async Task<TicketResponseDto> CreateTicketAsync(CreateTicketDto createTicketDto)
         {
+            // Validation
+            if (createTicketDto == null)
+                throw new ValidationException("Ticket data is required");
+
+            if (string.IsNullOrWhiteSpace(createTicketDto.Title))
+                throw new ValidationException("Ticket title is required");
+
             var user = await _userRepository.GetByIdAsync(createTicketDto.AssignedUserId);
             if (user == null)
-            {
-                return null;
-            }
+                throw new NotFoundException($"User with ID {createTicketDto.AssignedUserId} not found");
 
             var kanbanColumn = await _kanbanColumnRepository.GetByIdAsync(createTicketDto.KanbanColumnId);
             if (kanbanColumn == null)
-            {
-                return null;
-            }
+                throw new NotFoundException($"Kanban column with ID {createTicketDto.KanbanColumnId} not found");
 
             var ticket = new Ticket
             {
@@ -81,9 +85,7 @@ namespace backend.Services
             var existingTicket = await _ticketRepository.GetByIdAsync(id);
 
             if (existingTicket == null)
-            {
-                return false;
-            }
+                throw new NotFoundException($"Ticket with ID {id} not found");
 
             await _ticketRepository.DeleteAsync(id);
             return true;
