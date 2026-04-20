@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using backend.Interfaces;
 using backend.Repositories;
 using backend.Services;
+using backend.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,7 +43,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseExceptionHandler(); //active l’interception des exceptions
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseCors("AllowAngular");
 
