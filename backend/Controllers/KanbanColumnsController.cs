@@ -26,12 +26,6 @@ namespace backend.Controllers
         public async Task<ActionResult<KanbanColumnResponseDto>> GetKanbanColumnById(int id)
         {
             var kanbanColumn = await _kanbanColumnService.GetKanbanColumnByIdAsync(id);
-
-            if (kanbanColumn == null)
-            {
-                return NotFound();
-            }
-
             return Ok(kanbanColumn);
         }
 
@@ -39,24 +33,13 @@ namespace backend.Controllers
         public async Task<ActionResult<KanbanColumnResponseDto>> CreateKanbanColumn(CreateKanbanColumnDto createKanbanColumnDto)
         {
             var createdKanbanColumn = await _kanbanColumnService.CreateKanbanColumnAsync(createKanbanColumnDto);
-            if (createdKanbanColumn == null)
-            {
-                return NotFound(new { message = "User not found" });
-            }
-
             return CreatedAtAction(nameof(GetKanbanColumnById), new { id = createdKanbanColumn.Id }, createdKanbanColumn);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteKanbanColumn(int id)
         {
-            var deleted = await _kanbanColumnService.DeleteKanbanColumnAsync(id);
-
-            if (!deleted)
-            {
-                return NotFound(new { message = "Kanban column not found" });
-            }
-
+            await _kanbanColumnService.DeleteKanbanColumnAsync(id);
             return NoContent();
         }
     }

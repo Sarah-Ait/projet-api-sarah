@@ -43,16 +43,6 @@ namespace backend.Services
 
         public async Task<UserResponseDto> CreateUserAsync(CreateUserDto createUserDto)
         {
-            // Validation
-            if (createUserDto == null)
-                throw new ValidationException("User data is required");
-
-            if (string.IsNullOrWhiteSpace(createUserDto.Email))
-                throw new ValidationException("Email is required");
-
-            if (string.IsNullOrWhiteSpace(createUserDto.Name))
-                throw new ValidationException("Name is required");
-
             var user = new User
             {
                 Name = createUserDto.Name,

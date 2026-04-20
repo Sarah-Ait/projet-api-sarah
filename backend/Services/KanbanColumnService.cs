@@ -47,13 +47,7 @@ namespace backend.Services
 
         public async Task<KanbanColumnResponseDto> CreateKanbanColumnAsync(CreateKanbanColumnDto createKanbanColumnDto)
         {
-            // Validation
-            if (createKanbanColumnDto == null)
-                throw new ValidationException("Kanban column data is required");
-
-            if (string.IsNullOrWhiteSpace(createKanbanColumnDto.Name))
-                throw new ValidationException("Kanban column name is required");
-
+            // Validation - Check if user exists (business rule)
             var user = await _userRepository.GetByIdAsync(createKanbanColumnDto.UserId);
 
             if (user == null)

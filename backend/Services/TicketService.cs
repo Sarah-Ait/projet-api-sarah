@@ -52,13 +52,7 @@ namespace backend.Services
 
         public async Task<TicketResponseDto> CreateTicketAsync(CreateTicketDto createTicketDto)
         {
-            // Validation
-            if (createTicketDto == null)
-                throw new ValidationException("Ticket data is required");
-
-            if (string.IsNullOrWhiteSpace(createTicketDto.Title))
-                throw new ValidationException("Ticket title is required");
-
+            // Validation - Check if user and kanban column exist (business rules)
             var user = await _userRepository.GetByIdAsync(createTicketDto.AssignedUserId);
             if (user == null)
                 throw new NotFoundException($"User with ID {createTicketDto.AssignedUserId} not found");

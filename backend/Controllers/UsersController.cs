@@ -26,12 +26,6 @@ namespace backend.Controllers
         public async Task<ActionResult<UserResponseDto>> GetUserById(int id)
         {
             var user = await _userService.GetUserByIdAsync(id);
-
-            if (user == null)
-            {
-                return NotFound();
-            }
-
             return Ok(user);
         }
 
