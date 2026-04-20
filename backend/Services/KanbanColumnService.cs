@@ -1,6 +1,7 @@
 using backend.Interfaces;
 using backend.Models;
 using backend.DTOs;
+using backend.Exceptions;
 
 namespace backend.Services
 {
@@ -34,24 +35,29 @@ namespace backend.Services
             return kanbanColumns.Select(MapToKanbanColumnResponseDto).ToList();
         }
 
-        public async Task<KanbanColumnResponseDto?> GetKanbanColumnByIdAsync(int id)
+        public async Task<KanbanColumnResponseDto> GetKanbanColumnByIdAsync(int id)
         {
             var kanbanColumn = await _kanbanColumnRepository.GetByIdAsync(id);
             
             if (kanbanColumn == null)
-                return null;
+                throw new NotFoundException($"Kanban column with ID {id} not found");
 
             return MapToKanbanColumnResponseDto(kanbanColumn);
         }
 
         public async Task<KanbanColumnResponseDto> CreateKanbanColumnAsync(CreateKanbanColumnDto createKanbanColumnDto)
         {
+            // Validation
+            if (createKanbanColumnDto == null)
+                throw new ValidationException("Kanban column data is required");
+
+            if (string.IsNullOrWhiteSpace(createKanbanColumnDto.Name))
+                throw new ValidationException("Kanban column name is required");
+
             var user = await _userRepository.GetByIdAsync(createKanbanColumnDto.UserId);
 
             if (user == null)
-            {
-                return null;
-            }
+                throw new NotFoundException($"User with ID {createKanbanColumnDto.UserId} not found");
 
             var kanbanColumn = new KanbanColumn
             {
@@ -69,9 +75,7 @@ namespace backend.Services
             var existingKanbanColumn = await _kanbanColumnRepository.GetByIdAsync(id);
 
             if (existingKanbanColumn == null)
-            {
-                return false;
-            }
+                throw new NotFoundException($"Kanban column with ID {id} not found");
 
             await _kanbanColumnRepository.DeleteAsync(id);
             return true;
