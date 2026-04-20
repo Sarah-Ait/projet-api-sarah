@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using backend.Interfaces;
-using backend.Models;
 using backend.DTOs;
 
 namespace backend.Controllers
@@ -20,16 +19,7 @@ namespace backend.Controllers
         public async Task<ActionResult<IEnumerable<UserResponseDto>>> GetAllUsers()
         {
             var users = await _userService.GetAllUsersAsync();
-
-            var response = users.Select(user => new UserResponseDto
-            {
-                Id = user.Id,
-                Name = user.Name,
-                Email = user.Email,
-                Role = user.Role
-            });
-
-            return Ok(response);
+            return Ok(users);
         }
 
         [HttpGet("{id}")]
@@ -42,31 +32,14 @@ namespace backend.Controllers
                 return NotFound();
             }
 
-            var response = new UserResponseDto
-            {
-                Id = user.Id,
-                Name = user.Name,
-                Email = user.Email,
-                Role = user.Role
-            };
-
-            return Ok(response);
+            return Ok(user);
         }
 
         [HttpPost]
         public async Task<ActionResult<UserResponseDto>> CreateUser(CreateUserDto createUserDto)
         {
             var createdUser = await _userService.CreateUserAsync(createUserDto);
-
-            var response = new UserResponseDto
-            {
-                Id = createdUser.Id,
-                Name = createdUser.Name,
-                Email = createdUser.Email,
-                Role = createdUser.Role
-            };
-
-            return CreatedAtAction(nameof(GetUserById), new { id = response.Id }, response);
+            return CreatedAtAction(nameof(GetUserById), new { id = createdUser.Id }, createdUser);
         }
     }
 }

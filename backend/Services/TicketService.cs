@@ -20,17 +20,36 @@ namespace backend.Services
             _kanbanColumnRepository = kanbanColumnRepository;
         }
 
-        public async Task<List<Ticket>> GetAllTicketsAsync()
+        private TicketResponseDto MapToTicketResponseDto(Ticket ticket)
         {
-            return await _ticketRepository.GetAllAsync();
+            return new TicketResponseDto
+            {
+                Id = ticket.Id,
+                Title = ticket.Title,
+                Description = ticket.Description,
+                TimeSpentHours = ticket.TimeSpentHours,
+                AssignedUserId = ticket.AssignedUserId,
+                KanbanColumnId = ticket.KanbanColumnId
+            };
         }
 
-        public async Task<Ticket?> GetTicketByIdAsync(int id)
+        public async Task<List<TicketResponseDto>> GetAllTicketsAsync()
         {
-            return await _ticketRepository.GetByIdAsync(id);
+            var tickets = await _ticketRepository.GetAllAsync();
+            return tickets.Select(MapToTicketResponseDto).ToList();
         }
 
-        public async Task<Ticket> CreateTicketAsync(CreateTicketDto createTicketDto)
+        public async Task<TicketResponseDto?> GetTicketByIdAsync(int id)
+        {
+            var ticket = await _ticketRepository.GetByIdAsync(id);
+            
+            if (ticket == null)
+                return null;
+
+            return MapToTicketResponseDto(ticket);
+        }
+
+        public async Task<TicketResponseDto?> CreateTicketAsync(CreateTicketDto createTicketDto)
         {
             var user = await _userRepository.GetByIdAsync(createTicketDto.AssignedUserId);
             if (user == null)
@@ -53,7 +72,8 @@ namespace backend.Services
                 KanbanColumnId = createTicketDto.KanbanColumnId
             };
 
-            return await _ticketRepository.CreateAsync(ticket);
+            var createdTicket = await _ticketRepository.CreateAsync(ticket);
+            return MapToTicketResponseDto(createdTicket);
         }
 
         public async Task<bool> DeleteTicketAsync(int id)

@@ -17,17 +17,34 @@ namespace backend.Services
             _userRepository = userRepository;
         }
 
-        public async Task<List<KanbanColumn>> GetAllKanbanColumnsAsync()
+        private KanbanColumnResponseDto MapToKanbanColumnResponseDto(KanbanColumn kanbanColumn)
         {
-            return await _kanbanColumnRepository.GetAllAsync();
+            return new KanbanColumnResponseDto
+            {
+                Id = kanbanColumn.Id,
+                Name = kanbanColumn.Name,
+                Order = kanbanColumn.Order,
+                UserId = kanbanColumn.UserId
+            };
         }
 
-        public async Task<KanbanColumn?> GetKanbanColumnByIdAsync(int id)
+        public async Task<List<KanbanColumnResponseDto>> GetAllKanbanColumnsAsync()
         {
-            return await _kanbanColumnRepository.GetByIdAsync(id);
+            var kanbanColumns = await _kanbanColumnRepository.GetAllAsync();
+            return kanbanColumns.Select(MapToKanbanColumnResponseDto).ToList();
         }
 
-        public async Task<KanbanColumn> CreateKanbanColumnAsync(CreateKanbanColumnDto createKanbanColumnDto)
+        public async Task<KanbanColumnResponseDto?> GetKanbanColumnByIdAsync(int id)
+        {
+            var kanbanColumn = await _kanbanColumnRepository.GetByIdAsync(id);
+            
+            if (kanbanColumn == null)
+                return null;
+
+            return MapToKanbanColumnResponseDto(kanbanColumn);
+        }
+
+        public async Task<KanbanColumnResponseDto> CreateKanbanColumnAsync(CreateKanbanColumnDto createKanbanColumnDto)
         {
             var user = await _userRepository.GetByIdAsync(createKanbanColumnDto.UserId);
 
@@ -43,7 +60,21 @@ namespace backend.Services
                 UserId = createKanbanColumnDto.UserId
             };
 
-            return await _kanbanColumnRepository.CreateAsync(kanbanColumn);
+            var createdKanbanColumn = await _kanbanColumnRepository.CreateAsync(kanbanColumn);
+            return MapToKanbanColumnResponseDto(createdKanbanColumn);
+        }
+
+        public async Task<bool> DeleteKanbanColumnAsync(int id)
+        {
+            var existingKanbanColumn = await _kanbanColumnRepository.GetByIdAsync(id);
+
+            if (existingKanbanColumn == null)
+            {
+                return false;
+            }
+
+            await _kanbanColumnRepository.DeleteAsync(id);
+            return true;
         }
     }
 }

@@ -13,17 +13,34 @@ namespace backend.Services
             _userRepository = userRepository;
         }
 
-        public async Task<List<User>> GetAllUsersAsync()
+        private UserResponseDto MapToUserResponseDto(User user)
         {
-            return await _userRepository.GetAllAsync();
+            return new UserResponseDto
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email,
+                Role = user.Role
+            };
         }
 
-        public async Task<User?> GetUserByIdAsync(int id)
+        public async Task<List<UserResponseDto>> GetAllUsersAsync()
         {
-            return await _userRepository.GetByIdAsync(id);
+            var users = await _userRepository.GetAllAsync();
+            return users.Select(MapToUserResponseDto).ToList();
         }
 
-         public async Task<User> CreateUserAsync(CreateUserDto createUserDto)
+        public async Task<UserResponseDto?> GetUserByIdAsync(int id)
+        {
+            var user = await _userRepository.GetByIdAsync(id);
+            
+            if (user == null)
+                return null;
+
+            return MapToUserResponseDto(user);
+        }
+
+         public async Task<UserResponseDto> CreateUserAsync(CreateUserDto createUserDto)
         {
             var user = new User
             {
@@ -33,7 +50,8 @@ namespace backend.Services
                 Role = "Standard"
             };
 
-            return await _userRepository.CreateAsync(user);
+            var createdUser = await _userRepository.CreateAsync(user);
+            return MapToUserResponseDto(createdUser);
         }
 
         public async Task<bool> DeleteUserAsync(int id)

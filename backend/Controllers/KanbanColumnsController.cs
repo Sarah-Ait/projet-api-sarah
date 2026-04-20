@@ -1,13 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using backend.Interfaces;
-using backend.Models;
 using backend.DTOs;
 
 namespace backend.Controllers
 {
-    [ApiController] // montre que cette classe gere des routes api
+    [ApiController]
     [Route("api/[controller]")]
-    public class KanbanColumnsController : ControllerBase // ControllerBase: classe ou on recupere des outils comme ok notfound..
+    public class KanbanColumnsController : ControllerBase
     {
         private readonly IKanbanColumnService _kanbanColumnService;
 
@@ -20,16 +19,7 @@ namespace backend.Controllers
         public async Task<ActionResult<IEnumerable<KanbanColumnResponseDto>>> GetAllKanbanColumns()
         {
             var kanbanColumns = await _kanbanColumnService.GetAllKanbanColumnsAsync();
-
-            var response = kanbanColumns.Select(kanbanColumn => new KanbanColumnResponseDto
-            {
-                Id = kanbanColumn.Id,
-                Name = kanbanColumn.Name,
-                Order = kanbanColumn.Order,
-                UserId = kanbanColumn.UserId
-            });
-
-            return Ok(response);
+            return Ok(kanbanColumns);
         }
 
         [HttpGet("{id}")]
@@ -42,15 +32,7 @@ namespace backend.Controllers
                 return NotFound();
             }
 
-            var response = new KanbanColumnResponseDto
-            {
-                Id = kanbanColumn.Id,
-                Name = kanbanColumn.Name,
-                Order = kanbanColumn.Order,
-                UserId = kanbanColumn.UserId
-            };
-
-            return Ok(response);
+            return Ok(kanbanColumn);
         }
 
         [HttpPost]
@@ -62,16 +44,20 @@ namespace backend.Controllers
                 return NotFound(new { message = "User not found" });
             }
 
+            return CreatedAtAction(nameof(GetKanbanColumnById), new { id = createdKanbanColumn.Id }, createdKanbanColumn);
+        }
 
-            var response = new KanbanColumnResponseDto
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteKanbanColumn(int id)
+        {
+            var deleted = await _kanbanColumnService.DeleteKanbanColumnAsync(id);
+
+            if (!deleted)
             {
-                Id = createdKanbanColumn.Id,
-                Name = createdKanbanColumn.Name,
-                Order = createdKanbanColumn.Order,
-                UserId = createdKanbanColumn.UserId
-            };
+                return NotFound(new { message = "Kanban column not found" });
+            }
 
-            return CreatedAtAction(nameof(GetKanbanColumnById), new { id = response.Id }, response);
+            return NoContent();
         }
     }
 }
