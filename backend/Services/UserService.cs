@@ -1,6 +1,7 @@
 using backend.Interfaces;
 using backend.Models;
 using backend.DTOs;
+using backend.Exceptions;
 
 namespace backend.Services
 {
@@ -30,18 +31,28 @@ namespace backend.Services
             return users.Select(MapToUserResponseDto).ToList();
         }
 
-        public async Task<UserResponseDto?> GetUserByIdAsync(int id)
+        public async Task<UserResponseDto> GetUserByIdAsync(int id)
         {
             var user = await _userRepository.GetByIdAsync(id);
             
             if (user == null)
-                return null;
+                throw new NotFoundException($"User with ID {id} not found");
 
             return MapToUserResponseDto(user);
         }
 
-         public async Task<UserResponseDto> CreateUserAsync(CreateUserDto createUserDto)
+        public async Task<UserResponseDto> CreateUserAsync(CreateUserDto createUserDto)
         {
+            // Validation
+            if (createUserDto == null)
+                throw new ValidationException("User data is required");
+
+            if (string.IsNullOrWhiteSpace(createUserDto.Email))
+                throw new ValidationException("Email is required");
+
+            if (string.IsNullOrWhiteSpace(createUserDto.Name))
+                throw new ValidationException("Name is required");
+
             var user = new User
             {
                 Name = createUserDto.Name,
@@ -59,9 +70,7 @@ namespace backend.Services
             var existingUser = await _userRepository.GetByIdAsync(id);
 
             if (existingUser == null)
-            {
-                return false;
-            }
+                throw new NotFoundException($"User with ID {id} not found");
 
             await _userRepository.DeleteAsync(id);
             return true;
