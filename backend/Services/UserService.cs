@@ -2,16 +2,19 @@ using backend.Interfaces;
 using backend.Models;
 using backend.DTOs;
 using backend.Exceptions;
+using Microsoft.AspNetCore.Identity; // permet de hasher les mots de passe
 
 namespace backend.Services
 {
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly PasswordHasher<User> _passwordHasher; // outil de hash
 
         public UserService(IUserRepository userRepository)
         {
             _userRepository = userRepository;
+            _passwordHasher = new PasswordHasher<User>(); // crée l'outil de hash
         }
 
         private UserResponseDto MapToUserResponseDto(User user)
