@@ -34,15 +34,15 @@ namespace backend.Services
 
         private string GenerateJwtToken(User user)
         {
-            var claims = new List<Claim>
+            var claims = new List<Claim> // infos qu'on veut stocker dans le token
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()), // id utilisateur
                 new Claim(ClaimTypes.Email, user.Email), // email
                 new Claim(ClaimTypes.Role, user.Role) // rôle
             };
 
-            var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!)
+            var key = new SymmetricSecurityKey(// clé de signature du token
+                Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!)// clé secrète lue depuis appsettings.json
             ); // clé secrète lue depuis appsettings.json
 
             var credentials = new SigningCredentials(
@@ -70,7 +70,7 @@ namespace backend.Services
             if (user == null)
                 return null; // email introuvable
 
-            var passwordVerificationResult = _passwordHasher.VerifyHashedPassword(
+            var passwordVerificationResult = _passwordHasher.VerifyHashedPassword( // compare le mot de passe saisi avec le hash stocké
                 user,
                 user.PasswordHash,
                 loginRequestDto.Password

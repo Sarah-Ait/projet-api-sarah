@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using backend.Interfaces;
 using backend.DTOs;
 
@@ -6,6 +7,7 @@ namespace backend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize] //veut dire que toutes les routes de ce controller nécessitent une authentification (un token JWT valide)
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
