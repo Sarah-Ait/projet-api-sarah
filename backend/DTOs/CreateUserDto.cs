@@ -15,5 +15,5 @@ public class CreateUserDto
 
     [Required]
     [MinLength(3)]
-    public string PasswordHash { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
 }
