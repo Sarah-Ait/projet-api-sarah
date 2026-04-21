@@ -29,6 +29,7 @@ builder.Services.AddScoped<IKanbanColumnRepository, KanbanColumnRepository>();
 builder.Services.AddScoped<IKanbanColumnService, KanbanColumnService>();
 builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 builder.Services.AddScoped<ITicketService, TicketService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 //explorer les endpoints (infos sur l api routes methodes ..) 
 builder.Services.AddEndpointsApiExplorer();
