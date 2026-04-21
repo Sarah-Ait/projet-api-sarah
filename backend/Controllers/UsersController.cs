@@ -7,8 +7,8 @@ namespace backend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize] //veut dire que toutes les routes de ce controller nécessitent une authentification (un token JWT valide)
-    public class UsersController : ControllerBase
+    
+    public class UsersController : ControllerBase 
     {
         private readonly IUserService _userService;
 
@@ -18,6 +18,7 @@ namespace backend.Controllers
         }
 
         [HttpGet]
+        [Authorize] // nécessite un token JWT valide pour accéder à cette route
         public async Task<ActionResult<IEnumerable<UserResponseDto>>> GetAllUsers()
         {
             var users = await _userService.GetAllUsersAsync();
@@ -25,6 +26,7 @@ namespace backend.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize] 
         public async Task<ActionResult<UserResponseDto>> GetUserById(int id)
         {
             var user = await _userService.GetUserByIdAsync(id);
@@ -40,6 +42,7 @@ namespace backend.Controllers
 
 
         [HttpDelete("{id}")]
+        [Authorize] 
         public async Task<IActionResult> DeleteUser(int id)
         {
             await _userService.DeleteUserAsync(id);

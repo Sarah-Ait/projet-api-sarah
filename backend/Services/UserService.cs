@@ -50,10 +50,9 @@ namespace backend.Services
             {
                 Name = createUserDto.Name,
                 Email = createUserDto.Email,
-                PasswordHash = createUserDto.PasswordHash,
                 Role = "Standard"
             };
-
+            user.PasswordHash = _passwordHasher.HashPassword(user, createUserDto.Password); // stocke un hash et pas le mot de passe brut
             var createdUser = await _userRepository.CreateAsync(user);
             return MapToUserResponseDto(createdUser);
         }
