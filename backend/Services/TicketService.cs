@@ -10,15 +10,18 @@ namespace backend.Services
         private readonly ITicketRepository _ticketRepository;
         private readonly IUserRepository _userRepository;
         private readonly IKanbanColumnRepository _kanbanColumnRepository;
+        private readonly ICurrentUserService _currentUserService;
 
         public TicketService(
             ITicketRepository ticketRepository,
             IUserRepository userRepository,
-            IKanbanColumnRepository kanbanColumnRepository)
+            IKanbanColumnRepository kanbanColumnRepository,
+            ICurrentUserService currentUserService)
         {
             _ticketRepository = ticketRepository;
             _userRepository = userRepository;
             _kanbanColumnRepository = kanbanColumnRepository;
+            _currentUserService = currentUserService;
         }
 
         private TicketResponseDto MapToTicketResponseDto(Ticket ticket)
@@ -80,6 +83,11 @@ namespace backend.Services
 
             if (existingTicket == null)
                 throw new NotFoundException($"Ticket with ID {id} not found");
+
+            if (!_currentUserService.IsAdmin && existingTicket.AssignedUserId != _currentUserService.UserId)
+                {
+                    throw new UnauthorizedAccessException("Vous ne pouvez pas supprimer ce ticket.");
+                }
 
             await _ticketRepository.DeleteAsync(id);
             return true;

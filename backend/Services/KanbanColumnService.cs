@@ -10,9 +10,12 @@ namespace backend.Services
         private readonly IKanbanColumnRepository _kanbanColumnRepository;
         private readonly IUserRepository _userRepository;
 
+        private readonly ICurrentUserService _currentUserService;
+
         public KanbanColumnService(
             IKanbanColumnRepository kanbanColumnRepository,
-            IUserRepository userRepository)
+            IUserRepository userRepository,
+            ICurrentUserService currentUserService)
         {
             _kanbanColumnRepository = kanbanColumnRepository;
             _userRepository = userRepository;
@@ -70,6 +73,10 @@ namespace backend.Services
 
             if (existingKanbanColumn == null)
                 throw new NotFoundException($"Kanban column with ID {id} not found");
+            if (!_currentUserService.IsAdmin && existingKanbanColumn.UserId != _currentUserService.UserId)
+            {
+                throw new UnauthorizedAccessException("Vous ne pouvez pas supprimer cette colonne.");
+            }
 
             await _kanbanColumnRepository.DeleteAsync(id);
             return true;
