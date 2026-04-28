@@ -50,4 +50,14 @@ export class Board implements OnInit {
   getTicketsByColumn(columnId: number): Ticket[] {
     return this.tickets.filter(ticket => ticket.kanbanColumnId === columnId);
   }
+
+  getTotalHoursByColumn(columnId: number): number {
+  return this.getTicketsByColumn(columnId)
+    .reduce((total, ticket) => total + ticket.timeSpentHours, 0);
+  }
+
+  getTotalHours(): number {
+    return this.tickets
+      .reduce((total, ticket) => total + ticket.timeSpentHours, 0);
+  }
 }
