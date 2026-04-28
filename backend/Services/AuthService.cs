@@ -43,8 +43,7 @@ namespace backend.Services
 
             var key = new SymmetricSecurityKey(// clé de signature du token
                 Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!)// clé secrète lue depuis appsettings.json
-            ); // clé secrète lue depuis appsettings.json
-
+            ); 
             var credentials = new SigningCredentials(
                 key,
                 SecurityAlgorithms.HmacSha256
