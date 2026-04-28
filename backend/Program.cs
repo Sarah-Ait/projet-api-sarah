@@ -53,19 +53,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)// on 
 
 builder.Services.AddAuthorization();
 
-// explorer les endpoints (infos sur l api routes methodes ..)
+
 builder.Services.AddEndpointsApiExplorer();
-// genere le doc swagger
-//builder.Services.AddSwaggerGen();
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
-        Name = "Authorization", // nom du header HTTP
-        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http, // auth HTTP
-        Scheme = "bearer", // type Bearer
-        BearerFormat = "JWT", // format attendu
-        In = Microsoft.OpenApi.Models.ParameterLocation.Header, // token envoyé dans le header
+        Name = "Authorization", 
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http, 
+        Scheme = "bearer", 
+        BearerFormat = "JWT", 
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header, 
         Description = "Entrez uniquement votre token JWT"
     });
 
@@ -94,12 +92,15 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<ExceptionMiddleware>();
-
 app.UseCors("AllowAngular");
-
-app.UseAuthentication(); // vérifie le token JWT
-app.UseAuthorization(); // applique [Authorize]
+app.UseAuthentication(); 
+app.UseAuthorization(); 
 
 app.MapControllers();
+
+if (app.Environment.IsDevelopment())
+{
+    await AdminSeeder.SeedAdminAsync(app.Services, app.Configuration);
+}
 
 app.Run();
