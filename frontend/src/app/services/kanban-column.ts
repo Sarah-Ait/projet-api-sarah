@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { KanbanColumn } from '../models/kanban-column.model';
 
@@ -11,7 +11,17 @@ export class KanbanColumnService {
 
   constructor(private http: HttpClient) {}
 
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token');
+
+    return new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+  }
+
   getColumns(): Observable<KanbanColumn[]> {
-    return this.http.get<KanbanColumn[]>(this.apiUrl);
+    return this.http.get<KanbanColumn[]>(this.apiUrl, {
+      headers: this.getAuthHeaders()
+    });
   }
 }

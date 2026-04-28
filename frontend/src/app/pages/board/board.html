@@ -1,3 +1,27 @@
-<p>board works!</p>
-<h1>Tableau Kanban</h1>
-<p>Connexion réussie.</p>
+<div class="board-page">
+  <header class="board-header">
+    <div>
+      <h1>Tableau Kanban</h1>
+      <p>Gestion des colonnes et des tickets</p>
+    </div>
+  </header>
+
+  <p class="error-message" *ngIf="errorMessage">
+    {{ errorMessage }}
+  </p>
+
+  <div class="columns-container">
+    <div class="column-card" *ngFor="let column of columns">
+      <h2>
+        {{ column.name }}
+        <span>({{ getTicketsByColumn(column.id).length }})</span>
+      </h2>
+
+      <div class="ticket-card" *ngFor="let ticket of getTicketsByColumn(column.id)">
+        <h3>{{ ticket.title }}</h3>
+        <p>{{ ticket.description }}</p>
+        <small>{{ ticket.timeSpentHours }} h</small>
+      </div>
+    </div>
+  </div>
+</div>
