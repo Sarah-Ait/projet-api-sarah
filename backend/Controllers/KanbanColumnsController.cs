@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using backend.Interfaces;
 using backend.DTOs;
+using Microsoft.AspNetCore.Authorization;
+using backend.Constants;
 
 namespace backend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class KanbanColumnsController : ControllerBase
     {
         private readonly IKanbanColumnService _kanbanColumnService;

@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using backend.Interfaces;
 using backend.DTOs;
+using Microsoft.AspNetCore.Authorization;
+using backend.Constants;
 
 namespace backend.Controllers
 {
@@ -19,6 +21,7 @@ namespace backend.Controllers
 
         [HttpGet]
         [Authorize] // nécessite un token JWT valide pour accéder à cette route
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult<IEnumerable<UserResponseDto>>> GetAllUsers()
         {
             var users = await _userService.GetAllUsersAsync();
@@ -27,6 +30,7 @@ namespace backend.Controllers
 
         [HttpGet("{id}")]
         [Authorize] 
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult<UserResponseDto>> GetUserById(int id)
         {
             var user = await _userService.GetUserByIdAsync(id);
@@ -43,6 +47,7 @@ namespace backend.Controllers
 
         [HttpDelete("{id}")]
         [Authorize] 
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> DeleteUser(int id)
         {
             await _userService.DeleteUserAsync(id);
