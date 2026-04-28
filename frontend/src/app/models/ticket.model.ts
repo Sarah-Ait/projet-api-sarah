@@ -1,0 +1,16 @@
+export interface Ticket {
+  id: number;
+  title: string;
+  description: string;
+  timeSpentHours: number;
+  createdAt: string;
+  assignedUserId: number;
+  kanbanColumnId: number;
+}
+
+export interface CreateTicketRequest {
+  title: string;
+  description: string;
+  timeSpentHours: number;
+  kanbanColumnId: number;
+}
