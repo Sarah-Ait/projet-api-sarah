@@ -7,6 +7,48 @@
     </div>
   </header>
 
+<section class="create-ticket-card">
+  <h2>Créer un ticket</h2>
+
+  <form (ngSubmit)="createTicket()">
+    <input
+      type="text"
+      name="title"
+      [(ngModel)]="newTicketTitle"
+      placeholder="Titre du ticket"
+      required
+    />
+
+    <input
+      type="text"
+      name="description"
+      [(ngModel)]="newTicketDescription"
+      placeholder="Description"
+    />
+
+    <input
+      type="number"
+      name="timeSpentHours"
+      [(ngModel)]="newTicketTimeSpentHours"
+      placeholder="Temps passé"
+      min="0"
+    />
+
+    <select
+      name="kanbanColumnId"
+      [(ngModel)]="newTicketColumnId"
+      required
+    >
+      <option [ngValue]="null">Choisir une colonne</option>
+      <option *ngFor="let column of columns" [ngValue]="column.id">
+        {{ column.name }}
+      </option>
+    </select>
+
+    <button type="submit">Ajouter</button>
+  </form>
+</section>
+
   <p class="error-message" *ngIf="errorMessage">
     {{ errorMessage }}
   </p>

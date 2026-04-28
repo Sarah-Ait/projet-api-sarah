@@ -73,3 +73,43 @@
   color: #2563eb;
   font-weight: bold;
 }
+
+.create-ticket-card {
+  background: white;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.create-ticket-card h2 {
+  margin-top: 0;
+  font-size: 18px;
+}
+
+.create-ticket-card form {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.create-ticket-card input,
+.create-ticket-card select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.create-ticket-card button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.create-ticket-card button:hover {
+  background: #1d4ed8;
+}

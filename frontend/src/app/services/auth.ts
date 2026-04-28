@@ -22,4 +22,18 @@ export class Auth {
   saveUserRole(role: string): void {
     localStorage.setItem('role', role);
   }
+
+  getCurrentUserId(): number | null {
+  const token = localStorage.getItem('token');
+
+  if (!token) {
+    return null;
+  }
+
+  const payload = JSON.parse(atob(token.split('.')[1]));
+
+  const userId = payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
+
+  return Number(userId);
+}
 }
