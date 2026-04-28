@@ -1,0 +1,41 @@
+<div class="login-page">
+  <div class="login-card">
+    <h1>Connexion</h1>
+    <p>Connectez-vous pour accéder au tableau Kanban.</p>
+
+    <form (ngSubmit)="onLogin()">
+      <label>Email</label>
+      <input
+        type="email"
+        name="email"
+        [(ngModel)]="email"
+        placeholder="admin@example.com"
+        required
+      />
+
+      <label>Mot de passe</label>
+      <input
+        type="password"
+        name="password"
+        [(ngModel)]="password"
+        placeholder="Mot de passe"
+        required
+      />
+
+      <label class="remember-row">
+        <input
+          type="checkbox"
+          name="rememberMe"
+          [(ngModel)]="rememberMe"
+        />
+        Se souvenir de moi
+      </label>
+
+      <p class="error-message" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </p>
+
+      <button type="submit">Se connecter</button>
+    </form>
+  </div>
+</div>
