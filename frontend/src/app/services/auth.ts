@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthResponse, LoginRequest } from '../models/auth.model';
+import { AuthResponse, LoginRequest, RegisterRequest } from '../models/auth.model';
 
 @Injectable({
   providedIn: 'root'
@@ -23,17 +24,26 @@ export class Auth {
     localStorage.setItem('role', role);
   }
 
-  getCurrentUserId(): number | null {
-  const token = localStorage.getItem('token');
-
-  if (!token) {
-    return null;
+  getUserRole(): string | null {
+    return localStorage.getItem('role');
   }
 
-  const payload = JSON.parse(atob(token.split('.')[1]));
+  getCurrentUserId(): number | null {
+    const token = localStorage.getItem('token');
 
-  const userId = payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
+    if (!token) {
+      return null;
+    }
 
-  return Number(userId);
-}
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const userId =
+      payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
+
+    return Number(userId);
+  }
+
+  logout(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+  }
 }

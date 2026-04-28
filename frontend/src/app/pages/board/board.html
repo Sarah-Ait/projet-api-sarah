@@ -1,74 +1,154 @@
 <div class="board-page">
-  <header class="board-header">
-    <div>
-      <h1>Tableau Kanban</h1>
-      <p>Gestion des colonnes et des tickets</p>
-      <p class="total-hours">Total général : {{ getTotalHours() }} h</p>
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="brand-dot"></div>
+      <span class="brand-name">KanbanApp</span>
+
+      <nav class="topbar-nav">
+        <a class="nav-link active">Tasks Board</a>
+      </nav>
+    </div>
+
+    <div class="topbar-right">
+      <div class="summary-badge">
+        Total : {{ getTotalHours() }} h
+      </div>
+
+      <a
+        *ngIf="isAdmin()"
+        routerLink="/admin"
+        class="icon-button admin-button"
+        title="Espace admin"
+      >
+        Admin
+      </a>
+
+      <button
+        type="button"
+        class="icon-button logout-button"
+        title="Se déconnecter"
+        (click)="logout()"
+      >
+        <span class="logout-icon">🚪</span>
+        <span>Logout</span>
+      </button>
     </div>
   </header>
-
-<section class="create-ticket-card">
-  <h2>Créer un ticket</h2>
-
-  <form (ngSubmit)="createTicket()">
-    <input
-      type="text"
-      name="title"
-      [(ngModel)]="newTicketTitle"
-      placeholder="Titre du ticket"
-      required
-    />
-
-    <input
-      type="text"
-      name="description"
-      [(ngModel)]="newTicketDescription"
-      placeholder="Description"
-    />
-
-    <input
-      type="number"
-      name="timeSpentHours"
-      [(ngModel)]="newTicketTimeSpentHours"
-      placeholder="Temps passé"
-      min="0"
-    />
-
-    <select
-      name="kanbanColumnId"
-      [(ngModel)]="newTicketColumnId"
-      required
-    >
-      <option [ngValue]="null">Choisir une colonne</option>
-      <option *ngFor="let column of columns" [ngValue]="column.id">
-        {{ column.name }}
-      </option>
-    </select>
-
-    <button type="submit">Ajouter</button>
-  </form>
-</section>
 
   <p class="error-message" *ngIf="errorMessage">
     {{ errorMessage }}
   </p>
 
-  <div class="columns-container">
-    <div class="column-card" *ngFor="let column of columns">
-      <h2>
-        {{ column.name }}
-        <span>({{ getTicketsByColumn(column.id).length }})</span>
-      </h2>
-
-      <p class="column-hours">
-        {{ getTotalHoursByColumn(column.id) }} h passées
+  <main class="board-layout">
+    <aside class="creator-panel">
+      <h2>Créer une tâche</h2>
+      <p class="panel-subtitle">
+        Ajoute une tâche avec son titre, sa description, son estimation et son état.
       </p>
 
-      <div class="ticket-card" *ngFor="let ticket of getTicketsByColumn(column.id)">
-        <h3>{{ ticket.title }}</h3>
-        <p>{{ ticket.description }}</p>
-        <small>{{ ticket.timeSpentHours }} h</small>
+      <form (ngSubmit)="createTicket()" class="creator-form">
+        <div class="form-field">
+          <label for="title">Titre</label>
+          <input
+            id="title"
+            type="text"
+            name="title"
+            [(ngModel)]="newTicketTitle"
+            placeholder="Ex : Corriger le bug login"
+            required
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="description">Description</label>
+          <textarea
+            id="description"
+            name="description"
+            [(ngModel)]="newTicketDescription"
+            rows="4"
+            placeholder="Décris brièvement la tâche"
+          ></textarea>
+        </div>
+
+        <div class="form-field">
+          <label for="timeSpentHours">Estimation de temps (h)</label>
+          <input
+            id="timeSpentHours"
+            type="number"
+            name="timeSpentHours"
+            [(ngModel)]="newTicketTimeSpentHours"
+            min="0"
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="kanbanColumnId">Colonne / état</label>
+          <select
+            id="kanbanColumnId"
+            name="kanbanColumnId"
+            [(ngModel)]="newTicketColumnId"
+            required
+          >
+            <option [ngValue]="null">Choisir une colonne</option>
+            <option *ngFor="let column of columns" [ngValue]="column.id">
+              {{ column.name }}
+            </option>
+          </select>
+        </div>
+
+        <button type="submit" class="create-button">
+          Ajouter la tâche
+        </button>
+      </form>
+    </aside>
+
+    <section class="kanban-section">
+      <div class="section-header">
+        <h1>Tasks Board</h1>
       </div>
-    </div>
-  </div>
+
+      <div class="columns-container">
+        <div class="column-card" *ngFor="let column of columns">
+          <div class="column-header">
+            <div>
+              <h2>{{ column.name }}</h2>
+              <p>{{ getTicketsByColumn(column.id).length }} tâche(s)</p>
+            </div>
+
+            <span class="column-hours">
+              {{ getTotalHoursByColumn(column.id) }} h
+            </span>
+          </div>
+
+          <div class="tickets-list">
+            <div class="ticket-card" *ngFor="let ticket of getTicketsByColumn(column.id)">
+              <div class="ticket-top">
+                <h3>{{ ticket.title }}</h3>
+              </div>
+
+              <p class="ticket-description">
+                {{ ticket.description || 'Aucune description' }}
+              </p>
+
+              <div class="ticket-meta">
+                <span class="ticket-time">
+                  Est. {{ ticket.timeSpentHours }} h
+                </span>
+              </div>
+
+              <div class="ticket-actions">
+                <button
+                  type="button"
+                  class="delete-button"
+                  (click)="deleteTicket(ticket.id)"
+                >
+                  Supprimer
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
 </div>

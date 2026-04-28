@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
 import { KanbanColumn } from '../../models/kanban-column.model';
 import { Ticket } from '../../models/ticket.model';
 import { Auth } from '../../services/auth';
@@ -9,7 +10,7 @@ import { TicketService } from '../../services/ticket';
 
 @Component({
   selector: 'app-board',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './board.html',
   styleUrl: './board.css',
 })
@@ -26,11 +27,21 @@ export class Board implements OnInit {
   constructor(
     private kanbanColumnService: KanbanColumnService,
     private ticketService: TicketService,
-    private auth: Auth
+    private auth: Auth,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
     this.loadBoard();
+  }
+
+  isAdmin(): boolean {
+    return this.auth.getUserRole() === 'Admin';
+  }
+
+  logout(): void {
+    this.auth.logout();
+    this.router.navigate(['/']);
   }
 
   loadBoard(): void {
@@ -100,6 +111,23 @@ export class Board implements OnInit {
       error: (error) => {
         console.error('Erreur création ticket', error);
         this.errorMessage = 'Impossible de créer le ticket.';
+      }
+    });
+  }
+
+  deleteTicket(ticketId: number): void {
+    if (!confirm('Voulez-vous vraiment supprimer ce ticket ?')) {
+      return;
+    }
+
+    this.ticketService.deleteTicket(ticketId).subscribe({
+      next: () => {
+        this.errorMessage = '';
+        this.loadBoard();
+      },
+      error: (error) => {
+        console.error('Erreur suppression ticket', error);
+        this.errorMessage = 'Impossible de supprimer le ticket.';
       }
     });
   }

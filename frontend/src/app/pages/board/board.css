@@ -1,115 +1,320 @@
 .board-page {
   min-height: 100vh;
-  padding: 32px;
-  background: #f4f6f8;
+  padding: 24px;
+  background: #eef1f7;
   font-family: Arial, sans-serif;
+  color: #1f2937;
 }
 
-.board-header {
+.topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
-}
-
-.board-header h1 {
-  margin: 0;
-}
-
-.board-header p {
-  margin: 6px 0 0;
-  color: #666;
-}
-
-.error-message {
-  color: #dc2626;
-  margin-bottom: 16px;
-}
-
-.columns-container {
-  display: flex;
   gap: 20px;
-  align-items: flex-start;
-  overflow-x: auto;
-}
-
-.column-card {
-  min-width: 280px;
-  background: #e5e7eb;
-  border-radius: 12px;
-  padding: 16px;
-}
-
-.column-card h2 {
-  font-size: 18px;
-  margin-top: 0;
-  margin-bottom: 16px;
-}
-
-.column-card h2 span {
-  color: #666;
-  font-size: 14px;
-}
-
-.ticket-card {
-  background: white;
-  border-radius: 10px;
-  padding: 12px;
-  margin-bottom: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-}
-
-.ticket-card h3 {
-  margin: 0 0 8px;
-  font-size: 16px;
-}
-
-.ticket-card p {
-  margin: 0 0 8px;
-  color: #555;
-}
-
-.ticket-card small {
-  color: #2563eb;
-  font-weight: bold;
-}
-
-.create-ticket-card {
-  background: white;
-  padding: 16px;
-  border-radius: 12px;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 18px 24px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
   margin-bottom: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-.create-ticket-card h2 {
-  margin-top: 0;
-  font-size: 18px;
-}
-
-.create-ticket-card form {
+.topbar-left {
   display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.brand-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: #7c3aed;
+}
+
+.brand-name {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.topbar-nav {
+  display: flex;
+  gap: 12px;
+}
+
+.nav-link {
+  font-size: 14px;
+  color: #6b7280;
+  padding-bottom: 6px;
+}
+
+.nav-link.active {
+  color: #111827;
+  font-weight: 700;
+  border-bottom: 2px solid #4f46e5;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
   gap: 12px;
   flex-wrap: wrap;
 }
 
-.create-ticket-card input,
-.create-ticket-card select {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+.summary-badge {
+  background: #f3f4f6;
+  color: #111827;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 14px;
 }
 
-.create-ticket-card button {
-  padding: 10px 16px;
+.icon-button {
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.admin-button {
+  background: #4338ca;
+  color: white;
+}
+
+.admin-button:hover {
+  background: #3730a3;
+}
+
+.logout-button {
+  background: #111827;
+  color: white;
+}
+
+.logout-button:hover {
+  background: #1f2937;
+}
+
+.logout-icon {
+  font-size: 16px;
+}
+
+.error-message {
+  color: #dc2626;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.board-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.creator-panel {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+.creator-panel h2 {
+  margin: 0 0 8px 0;
+  font-size: 24px;
+}
+
+.panel-subtitle {
+  margin: 0 0 18px 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.creator-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-field label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #374151;
+}
+
+.form-field input,
+.form-field textarea,
+.form-field select {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 14px;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.form-field textarea {
+  resize: vertical;
+}
+
+.create-button {
+  margin-top: 4px;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 16px;
   background: #2563eb;
   color: white;
-  font-weight: bold;
+  font-weight: 700;
   cursor: pointer;
 }
 
-.create-ticket-card button:hover {
+.create-button:hover {
   background: #1d4ed8;
+}
+
+.kanban-section {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+  overflow-x: auto;
+}
+
+.section-header {
+  margin-bottom: 20px;
+}
+
+.section-header h1 {
+  margin: 0;
+  font-size: 34px;
+}
+
+.columns-container {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  min-width: max-content;
+}
+
+.column-card {
+  width: 280px;
+  min-height: 500px;
+  background: #f8fafc;
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.column-header h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.column-header p {
+  margin: 6px 0 0 0;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.column-hours {
+  background: #eef2ff;
+  color: #4338ca;
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.tickets-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ticket-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+}
+
+.ticket-top h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.ticket-description {
+  margin: 12px 0;
+  font-size: 14px;
+  color: #4b5563;
+  line-height: 1.4;
+}
+
+.ticket-meta {
+  margin-bottom: 14px;
+}
+
+.ticket-time {
+  display: inline-block;
+  background: #ecfdf5;
+  color: #047857;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ticket-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.delete-button {
+  border: none;
+  border-radius: 10px;
+  padding: 8px 12px;
+  background: #ef4444;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.delete-button:hover {
+  background: #dc2626;
+}
+
+@media (max-width: 1000px) {
+  .board-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .topbar-right {
+    width: 100%;
+  }
 }

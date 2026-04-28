@@ -1,0 +1,49 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <h1>Créer un compte</h1>
+    <p>Créez un compte pour accéder à votre Kanban.</p>
+
+    <form (ngSubmit)="onRegister()">
+      <label>Nom</label>
+      <input
+        type="text"
+        name="name"
+        [(ngModel)]="name"
+        placeholder="Votre nom"
+        required
+      />
+
+      <label>Email</label>
+      <input
+        type="email"
+        name="email"
+        [(ngModel)]="email"
+        placeholder="email@example.com"
+        required
+      />
+
+      <label>Mot de passe</label>
+      <input
+        type="password"
+        name="password"
+        [(ngModel)]="password"
+        placeholder="Mot de passe"
+        required
+      />
+
+      <p class="error-message" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </p>
+
+      <p class="success-message" *ngIf="successMessage">
+        {{ successMessage }}
+      </p>
+
+      <button type="submit">Créer le compte</button>
+    </form>
+
+    <a routerLink="/" class="auth-link">
+      Déjà un compte ? Se connecter
+    </a>
+  </div>
+</div>
