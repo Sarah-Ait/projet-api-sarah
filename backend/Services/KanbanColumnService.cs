@@ -89,6 +89,38 @@ namespace backend.Services
             return MapToKanbanColumnResponseDto(updatedKanbanColumn);
         }
 
+        public async Task<List<KanbanColumnResponseDto>> ReorderKanbanColumnsAsync(ReorderKanbanColumnsDto reorderKanbanColumnsDto)
+        {
+            var ids = reorderKanbanColumnsDto.OrderedColumnIds;
+
+            if (ids.Distinct().Count() != ids.Count)
+                throw new ValidationException("La liste d'IDs contient des doublons.");
+
+            var columns = await _kanbanColumnRepository.GetByIdsAsync(ids);
+
+            if (columns.Count != ids.Count)
+                throw new NotFoundException("Une ou plusieurs colonnes n'existent pas.");
+
+            var distinctUserIds = columns.Select(c => c.UserId).Distinct().ToList();
+
+            if (distinctUserIds.Count != 1)
+                throw new ValidationException("Toutes les colonnes doivent appartenir au même utilisateur.");
+
+            var columnsById = columns.ToDictionary(column => column.Id);
+
+            for (int i = 0; i < ids.Count; i++)
+            {
+                columnsById[ids[i]].Order = i + 1;
+            }
+
+            await _kanbanColumnRepository.UpdateRangeAsync(columns);
+
+            return columns
+                .OrderBy(column => column.Order)
+                .Select(MapToKanbanColumnResponseDto)
+                .ToList();
+        }
+
         public async Task<bool> DeleteKanbanColumnAsync(int id)
         {
             var existingKanbanColumn = await _kanbanColumnRepository.GetByIdAsync(id);

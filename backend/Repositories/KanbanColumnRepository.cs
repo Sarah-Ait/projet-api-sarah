@@ -24,6 +24,13 @@ namespace backend.Repositories
             return await _context.KanbanColumns.FindAsync(id);
         }
 
+        public async Task<List<KanbanColumn>> GetByIdsAsync(IEnumerable<int> ids)
+        {
+            return await _context.KanbanColumns
+                .Where(c => ids.Contains(c.Id))
+                .ToListAsync();
+        }
+
         public async Task<KanbanColumn> CreateAsync(KanbanColumn kanbanColumn)
         {
             _context.KanbanColumns.Add(kanbanColumn);
@@ -36,6 +43,12 @@ namespace backend.Repositories
             _context.KanbanColumns.Update(kanbanColumn);
             await _context.SaveChangesAsync();
             return kanbanColumn;
+        }
+
+        public async Task UpdateRangeAsync(IEnumerable<KanbanColumn> kanbanColumns)
+        {
+            _context.KanbanColumns.UpdateRange(kanbanColumns);
+            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(int id)

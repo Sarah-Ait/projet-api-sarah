@@ -48,6 +48,14 @@ namespace backend.Controllers
             return Ok(updatedKanbanColumn);
         }
 
+        [HttpPut("reorder")]
+        [Authorize(Roles = Roles.Admin)]
+        public async Task<ActionResult<List<KanbanColumnResponseDto>>> ReorderKanbanColumns(ReorderKanbanColumnsDto reorderKanbanColumnsDto)
+        {
+            var reorderedColumns = await _kanbanColumnService.ReorderKanbanColumnsAsync(reorderKanbanColumnsDto);
+            return Ok(reorderedColumns);
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteKanbanColumn(int id)
         {
