@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { AuthResponse, LoginRequest } from '../models/auth.model';
 import { AuthResponse, LoginRequest, RegisterRequest } from '../models/auth.model';
 
 @Injectable({
@@ -40,6 +39,10 @@ export class Auth {
       payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
 
     return Number(userId);
+  }
+
+  register(registerRequest: RegisterRequest): Observable<void> {
+    return this.http.post<void>('http://localhost:5065/api/users', registerRequest);
   }
 
   logout(): void {

@@ -32,6 +32,7 @@ namespace backend.Services
                 Title = ticket.Title,
                 Description = ticket.Description,
                 TimeSpentHours = ticket.TimeSpentHours,
+                CreatedAt = ticket.CreatedAt,
                 AssignedUserId = ticket.AssignedUserId,
                 KanbanColumnId = ticket.KanbanColumnId
             };
