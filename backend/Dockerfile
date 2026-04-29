@@ -14,12 +14,15 @@ RUN dotnet publish -c Release -o /app/publish --no-restore /p:UseAppHost=false
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 
-RUN groupadd -r app && useradd -r -g app app
+# Crée l'utilisateur seulement s'il n'existe pas déjà
+RUN groupadd --system app || true
+RUN useradd --system --gid app app || true
+
 RUN mkdir -p /app/data && chown -R app:app /app/data
 
-USER app
-
 COPY --from=build --chown=app:app /app/publish ./
+
+USER app
 
 EXPOSE 5065
 ENV ASPNETCORE_URLS=http://+:5065
