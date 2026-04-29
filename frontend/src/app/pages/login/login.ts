@@ -1,46 +1,38 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Auth } from '../../services/auth';
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './login.html',
-  styleUrl: './login.css',
+  styleUrl: './login.css'
 })
 export class Login {
+  private readonly auth = inject(Auth);
+  private readonly router = inject(Router);
+
   email = '';
   password = '';
   rememberMe = false;
   errorMessage = '';
 
-  constructor(
-    private auth: Auth,
-    private router: Router
-  ) {}
-
   onLogin(): void {
     this.errorMessage = '';
 
-    this.auth.login({
-      email: this.email,
-      password: this.password
-    }).subscribe({
-      next: (response) => {
-        this.auth.saveToken(response.token);
-        this.auth.saveUserRole(response.role);
-
-        console.log('Connexion réussie', response);
-
-        this.router.navigate(['/board']);
-      },
-      error: (error) => {
-        console.error('Erreur login', error);
-        this.errorMessage = 'Email ou mot de passe incorrect.';
-      }
-    });
+    this.auth
+      .login({
+        email: this.email,
+        password: this.password,
+        rememberMe: this.rememberMe
+      })
+      .subscribe({
+        next: () => this.router.navigate(['/board']),
+        error: () => {
+          this.errorMessage = 'Email ou mot de passe incorrect.';
+        }
+      });
   }
 }

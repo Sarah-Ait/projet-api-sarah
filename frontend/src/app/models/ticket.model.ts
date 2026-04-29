@@ -12,6 +12,5 @@ export interface CreateTicketRequest {
   title: string;
   description: string;
   timeSpentHours: number;
-  assignedUserId: number;
   kanbanColumnId: number;
 }

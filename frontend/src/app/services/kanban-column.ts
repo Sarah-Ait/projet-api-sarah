@@ -1,27 +1,16 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { API_BASE_URL } from '../core/api.config';
 import { KanbanColumn } from '../models/kanban-column.model';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class KanbanColumnService {
-  private readonly apiUrl = 'http://localhost:5065/api/kanbancolumns';
+  private readonly http = inject(HttpClient);
+  private readonly apiUrl = `${API_BASE_URL}/api/kanbancolumns`;
 
-  constructor(private http: HttpClient) {}
-
-  private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token');
-
-    return new HttpHeaders({
-      Authorization: `Bearer ${token}`
-    });
-  }
-
-  getColumns(): Observable<KanbanColumn[]> {
-    return this.http.get<KanbanColumn[]>(this.apiUrl, {
-      headers: this.getAuthHeaders()
-    });
+  getColumns(userId?: number): Observable<KanbanColumn[]> {
+    const url = userId !== undefined ? `${this.apiUrl}?userId=${userId}` : this.apiUrl;
+    return this.http.get<KanbanColumn[]>(url);
   }
 }

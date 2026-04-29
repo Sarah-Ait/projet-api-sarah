@@ -1,39 +1,24 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { API_BASE_URL } from '../core/api.config';
 import { CreateTicketRequest, Ticket } from '../models/ticket.model';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class TicketService {
-  private readonly apiUrl = 'http://localhost:5065/api/tickets';
+  private readonly http = inject(HttpClient);
+  private readonly apiUrl = `${API_BASE_URL}/api/tickets`;
 
-  constructor(private http: HttpClient) {}
-
-  private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token');
-
-    return new HttpHeaders({
-      Authorization: `Bearer ${token}`
-    });
-  }
-
-  getTickets(): Observable<Ticket[]> {
-    return this.http.get<Ticket[]>(this.apiUrl, {
-      headers: this.getAuthHeaders()
-    });
+  getTickets(userId?: number): Observable<Ticket[]> {
+    const url = userId !== undefined ? `${this.apiUrl}?userId=${userId}` : this.apiUrl;
+    return this.http.get<Ticket[]>(url);
   }
 
   createTicket(request: CreateTicketRequest): Observable<Ticket> {
-    return this.http.post<Ticket>(this.apiUrl, request, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.post<Ticket>(this.apiUrl, request);
   }
 
   deleteTicket(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

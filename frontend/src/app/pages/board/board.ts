@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { KanbanColumn } from '../../models/kanban-column.model';
@@ -12,9 +12,16 @@ import { TicketService } from '../../services/ticket';
   selector: 'app-board',
   imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './board.html',
-  styleUrl: './board.css',
+  styleUrl: './board.css'
 })
 export class Board implements OnInit {
+  private readonly kanbanColumnService = inject(KanbanColumnService);
+  private readonly ticketService = inject(TicketService);
+  private readonly auth = inject(Auth);
+  private readonly router = inject(Router);
+
+  readonly isAdmin = this.auth.isAdmin;
+
   columns: KanbanColumn[] = [];
   tickets: Ticket[] = [];
   errorMessage = '';
@@ -24,45 +31,29 @@ export class Board implements OnInit {
   newTicketTimeSpentHours = 0;
   newTicketColumnId: number | null = null;
 
-  constructor(
-    private kanbanColumnService: KanbanColumnService,
-    private ticketService: TicketService,
-    private auth: Auth,
-    private router: Router
-  ) {}
-
   ngOnInit(): void {
     this.loadBoard();
   }
 
-  isAdmin(): boolean {
-    return this.auth.getUserRole() === 'Admin';
-  }
-
   logout(): void {
-    this.auth.logout();
-    this.router.navigate(['/']);
+    this.auth.logout().subscribe({
+      next: () => this.router.navigate(['/']),
+      error: () => {
+        this.auth.clearState();
+        this.router.navigate(['/']);
+      }
+    });
   }
 
   loadBoard(): void {
     this.kanbanColumnService.getColumns().subscribe({
-      next: (columns) => {
-        this.columns = columns;
-      },
-      error: (error) => {
-        console.error('Erreur chargement colonnes', error);
-        this.errorMessage = 'Impossible de charger les colonnes.';
-      }
+      next: columns => (this.columns = columns),
+      error: () => (this.errorMessage = 'Impossible de charger les colonnes.')
     });
 
     this.ticketService.getTickets().subscribe({
-      next: (tickets) => {
-        this.tickets = tickets;
-      },
-      error: (error) => {
-        console.error('Erreur chargement tickets', error);
-        this.errorMessage = 'Impossible de charger les tickets.';
-      }
+      next: tickets => (this.tickets = tickets),
+      error: () => (this.errorMessage = 'Impossible de charger les tickets.')
     });
   }
 
@@ -71,13 +62,14 @@ export class Board implements OnInit {
   }
 
   getTotalHoursByColumn(columnId: number): number {
-    return this.getTicketsByColumn(columnId)
-      .reduce((total, ticket) => total + ticket.timeSpentHours, 0);
+    return this.getTicketsByColumn(columnId).reduce(
+      (total, ticket) => total + ticket.timeSpentHours,
+      0
+    );
   }
 
   getTotalHours(): number {
-    return this.tickets
-      .reduce((total, ticket) => total + ticket.timeSpentHours, 0);
+    return this.tickets.reduce((total, ticket) => total + ticket.timeSpentHours, 0);
   }
 
   createTicket(): void {
@@ -86,33 +78,24 @@ export class Board implements OnInit {
       return;
     }
 
-    const currentUserId = this.auth.getCurrentUserId();
-
-    if (currentUserId === null) {
-      this.errorMessage = 'Utilisateur non connecté.';
-      return;
-    }
-
-    this.ticketService.createTicket({
-      title: this.newTicketTitle,
-      description: this.newTicketDescription,
-      timeSpentHours: this.newTicketTimeSpentHours,
-      assignedUserId: currentUserId,
-      kanbanColumnId: this.newTicketColumnId
-    }).subscribe({
-      next: () => {
-        this.newTicketTitle = '';
-        this.newTicketDescription = '';
-        this.newTicketTimeSpentHours = 0;
-        this.newTicketColumnId = null;
-        this.errorMessage = '';
-        this.loadBoard();
-      },
-      error: (error) => {
-        console.error('Erreur création ticket', error);
-        this.errorMessage = 'Impossible de créer le ticket.';
-      }
-    });
+    this.ticketService
+      .createTicket({
+        title: this.newTicketTitle,
+        description: this.newTicketDescription,
+        timeSpentHours: this.newTicketTimeSpentHours,
+        kanbanColumnId: this.newTicketColumnId
+      })
+      .subscribe({
+        next: () => {
+          this.newTicketTitle = '';
+          this.newTicketDescription = '';
+          this.newTicketTimeSpentHours = 0;
+          this.newTicketColumnId = null;
+          this.errorMessage = '';
+          this.loadBoard();
+        },
+        error: () => (this.errorMessage = 'Impossible de créer le ticket.')
+      });
   }
 
   deleteTicket(ticketId: number): void {
@@ -125,10 +108,7 @@ export class Board implements OnInit {
         this.errorMessage = '';
         this.loadBoard();
       },
-      error: (error) => {
-        console.error('Erreur suppression ticket', error);
-        this.errorMessage = 'Impossible de supprimer le ticket.';
-      }
+      error: () => (this.errorMessage = 'Impossible de supprimer le ticket.')
     });
   }
 }

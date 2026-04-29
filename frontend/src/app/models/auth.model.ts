@@ -1,10 +1,12 @@
 export interface LoginRequest {
   email: string;
   password: string;
+  rememberMe: boolean;
 }
 
 export interface AuthResponse {
-  token: string;
+  accessToken: string;
+  expiresAt: string;
   email: string;
   role: string;
 }
