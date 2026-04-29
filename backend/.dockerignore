@@ -3,8 +3,6 @@
 **/.vs
 **/.git
 **/.gitignore
-**/Dockerfile
-**/.dockerignore
 **/.idea
 **/Properties/launchSettings.json
 **/app.db

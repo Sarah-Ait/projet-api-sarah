@@ -4,6 +4,4 @@ dist
 **/.vscode
 **/.idea
 **/.git
-**/Dockerfile
-**/.dockerignore
 **/.env*
