@@ -8,18 +8,15 @@ namespace backend.Services
     public class TicketService : ITicketService
     {
         private readonly ITicketRepository _ticketRepository;
-        private readonly IUserRepository _userRepository;
         private readonly IKanbanColumnRepository _kanbanColumnRepository;
         private readonly ICurrentUserService _currentUserService;
 
         public TicketService(
             ITicketRepository ticketRepository,
-            IUserRepository userRepository,
             IKanbanColumnRepository kanbanColumnRepository,
             ICurrentUserService currentUserService)
         {
             _ticketRepository = ticketRepository;
-            _userRepository = userRepository;
             _kanbanColumnRepository = kanbanColumnRepository;
             _currentUserService = currentUserService;
         }
@@ -64,21 +61,20 @@ namespace backend.Services
 
         public async Task<TicketResponseDto> CreateTicketAsync(CreateTicketDto createTicketDto)
         {
-            // Validation - Check if user and kanban column exist (business rules)
-            var user = await _userRepository.GetByIdAsync(createTicketDto.AssignedUserId);
-            if (user == null)
-                throw new NotFoundException($"User with ID {createTicketDto.AssignedUserId} not found");
-
             var kanbanColumn = await _kanbanColumnRepository.GetByIdAsync(createTicketDto.KanbanColumnId);
+
             if (kanbanColumn == null)
                 throw new NotFoundException($"Kanban column with ID {createTicketDto.KanbanColumnId} not found");
+
+            if (!_currentUserService.IsAdmin && kanbanColumn.UserId != _currentUserService.UserId)
+                throw new UnauthorizedException("Vous ne pouvez pas créer un ticket dans cette colonne.");
 
             var ticket = new Ticket
             {
                 Title = createTicketDto.Title,
                 Description = createTicketDto.Description,
                 TimeSpentHours = createTicketDto.TimeSpentHours,
-                AssignedUserId = createTicketDto.AssignedUserId,
+                AssignedUserId = kanbanColumn.UserId,
                 KanbanColumnId = createTicketDto.KanbanColumnId
             };
 

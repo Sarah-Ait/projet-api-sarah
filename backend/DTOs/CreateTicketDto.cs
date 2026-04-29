@@ -15,8 +15,5 @@ public class CreateTicketDto
     public double TimeSpentHours { get; set; }
 
     [Range(1, int.MaxValue)]
-    public int AssignedUserId { get; set; }
-
-    [Range(1, int.MaxValue)]
     public int KanbanColumnId { get; set; }
 }
