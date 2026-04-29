@@ -14,17 +14,14 @@ RUN dotnet publish -c Release -o /app/publish --no-restore /p:UseAppHost=false
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 
-# Crée l'utilisateur seulement s'il n'existe pas déjà
-RUN groupadd --system app || true
-RUN useradd --system --gid app app || true
+RUN mkdir -p /app/data
 
-RUN mkdir -p /app/data && chown -R app:app /app/data
+COPY --from=build /app/publish ./
 
-COPY --from=build --chown=app:app /app/publish ./
+EXPOSE 10000
 
-USER app
-
-EXPOSE 5065
-ENV ASPNETCORE_URLS=http://+:5065
+ENV ASPNETCORE_ENVIRONMENT=Production
+ENV PORT=10000
+ENV ASPNETCORE_URLS=http://0.0.0.0:10000
 
 ENTRYPOINT ["dotnet", "backend.dll"]
