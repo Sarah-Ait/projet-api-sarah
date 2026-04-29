@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ApiTest {
-  private readonly apiUrl = 'http://localhost:5065';
+  private readonly apiUrl = 'https://projet-api-sarah-1.onrender.com';
 
   constructor(private http: HttpClient) {}
 
