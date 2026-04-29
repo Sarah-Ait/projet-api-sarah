@@ -131,8 +131,6 @@ namespace backend.Services
 
             if (existingKanbanColumn == null)
                 throw new NotFoundException($"Kanban column with ID {id} not found");
-            if (!_currentUserService.IsAdmin && existingKanbanColumn.UserId != _currentUserService.UserId)
-                throw new ForbiddenException("Vous ne pouvez pas supprimer cette colonne.");
 
             await _kanbanColumnRepository.DeleteAsync(id);
             return true;

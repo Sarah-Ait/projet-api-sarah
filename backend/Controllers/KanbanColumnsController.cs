@@ -57,6 +57,7 @@ namespace backend.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> DeleteKanbanColumn(int id)
         {
             await _kanbanColumnService.DeleteKanbanColumnAsync(id);
