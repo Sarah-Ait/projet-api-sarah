@@ -31,6 +31,13 @@ namespace backend.Repositories
             return kanbanColumn;
         }
 
+        public async Task<KanbanColumn> UpdateAsync(KanbanColumn kanbanColumn)
+        {
+            _context.KanbanColumns.Update(kanbanColumn);
+            await _context.SaveChangesAsync();
+            return kanbanColumn;
+        }
+
         public async Task DeleteAsync(int id)
         {
             var kanbanColumn = await _context.KanbanColumns.FindAsync(id);

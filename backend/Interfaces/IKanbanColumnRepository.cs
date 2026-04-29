@@ -7,6 +7,7 @@ namespace backend.Interfaces
         Task<List<KanbanColumn>> GetAllAsync();
         Task<KanbanColumn?> GetByIdAsync(int id);
         Task<KanbanColumn> CreateAsync(KanbanColumn kanbanColumn);
+        Task<KanbanColumn> UpdateAsync(KanbanColumn kanbanColumn);
         Task DeleteAsync(int id);
     }
 }

@@ -46,6 +46,13 @@ namespace backend.Controllers
             return Ok(updatedTicket);
         }
 
+        [HttpPatch("{id}/move")]
+        public async Task<ActionResult<TicketResponseDto>> MoveTicket(int id, MoveTicketDto moveTicketDto)
+        {
+            var movedTicket = await _ticketService.MoveTicketAsync(id, moveTicketDto);
+            return Ok(movedTicket);
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTicket(int id)
         {

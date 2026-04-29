@@ -100,6 +100,30 @@ namespace backend.Services
             return MapToTicketResponseDto(updatedTicket);
         }
 
+        public async Task<TicketResponseDto> MoveTicketAsync(int id, MoveTicketDto moveTicketDto)
+        {
+            var existingTicket = await _ticketRepository.GetByIdAsync(id);
+
+            if (existingTicket == null)
+                throw new NotFoundException($"Ticket with ID {id} not found");
+
+            if (!_currentUserService.IsAdmin && existingTicket.AssignedUserId != _currentUserService.UserId)
+                throw new ForbiddenException("Vous ne pouvez pas déplacer ce ticket.");
+
+            var targetColumn = await _kanbanColumnRepository.GetByIdAsync(moveTicketDto.TargetColumnId);
+
+            if (targetColumn == null)
+                throw new NotFoundException($"Kanban column with ID {moveTicketDto.TargetColumnId} not found");
+
+            if (targetColumn.UserId != existingTicket.AssignedUserId)
+                throw new ForbiddenException("La colonne cible n'appartient pas au propriétaire du ticket.");
+
+            existingTicket.KanbanColumnId = moveTicketDto.TargetColumnId;
+
+            var movedTicket = await _ticketRepository.UpdateAsync(existingTicket);
+            return MapToTicketResponseDto(movedTicket);
+        }
+
         public async Task<bool> DeleteTicketAsync(int id)
         {
             var existingTicket = await _ticketRepository.GetByIdAsync(id);

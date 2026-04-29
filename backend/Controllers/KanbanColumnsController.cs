@@ -40,6 +40,14 @@ namespace backend.Controllers
             return CreatedAtAction(nameof(GetKanbanColumnById), new { id = createdKanbanColumn.Id }, createdKanbanColumn);
         }
 
+        [HttpPut("{id}")]
+        [Authorize(Roles = Roles.Admin)]
+        public async Task<ActionResult<KanbanColumnResponseDto>> UpdateKanbanColumn(int id, UpdateKanbanColumnDto updateKanbanColumnDto)
+        {
+            var updatedKanbanColumn = await _kanbanColumnService.UpdateKanbanColumnAsync(id, updateKanbanColumnDto);
+            return Ok(updatedKanbanColumn);
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteKanbanColumn(int id)
         {

@@ -76,6 +76,19 @@ namespace backend.Services
             return MapToKanbanColumnResponseDto(createdKanbanColumn);
         }
 
+        public async Task<KanbanColumnResponseDto> UpdateKanbanColumnAsync(int id, UpdateKanbanColumnDto updateKanbanColumnDto)
+        {
+            var existingKanbanColumn = await _kanbanColumnRepository.GetByIdAsync(id);
+
+            if (existingKanbanColumn == null)
+                throw new NotFoundException($"Kanban column with ID {id} not found");
+
+            existingKanbanColumn.Name = updateKanbanColumnDto.Name;
+
+            var updatedKanbanColumn = await _kanbanColumnRepository.UpdateAsync(existingKanbanColumn);
+            return MapToKanbanColumnResponseDto(updatedKanbanColumn);
+        }
+
         public async Task<bool> DeleteKanbanColumnAsync(int id)
         {
             var existingKanbanColumn = await _kanbanColumnRepository.GetByIdAsync(id);
