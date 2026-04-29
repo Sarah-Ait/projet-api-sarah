@@ -67,7 +67,7 @@ namespace backend.Services
                 throw new NotFoundException($"Kanban column with ID {createTicketDto.KanbanColumnId} not found");
 
             if (!_currentUserService.IsAdmin && kanbanColumn.UserId != _currentUserService.UserId)
-                throw new UnauthorizedException("Vous ne pouvez pas créer un ticket dans cette colonne.");
+                throw new ForbiddenException("Vous ne pouvez pas créer un ticket dans cette colonne.");
 
             var ticket = new Ticket
             {
@@ -90,7 +90,7 @@ namespace backend.Services
                 throw new NotFoundException($"Ticket with ID {id} not found");
 
             if (!_currentUserService.IsAdmin && existingTicket.AssignedUserId != _currentUserService.UserId)
-                throw new UnauthorizedException("Vous ne pouvez pas modifier ce ticket.");
+                throw new ForbiddenException("Vous ne pouvez pas modifier ce ticket.");
 
             existingTicket.Title = updateTicketDto.Title;
             existingTicket.Description = updateTicketDto.Description;
@@ -108,9 +108,7 @@ namespace backend.Services
                 throw new NotFoundException($"Ticket with ID {id} not found");
 
             if (!_currentUserService.IsAdmin && existingTicket.AssignedUserId != _currentUserService.UserId)
-                {
-                    throw new UnauthorizedAccessException("Vous ne pouvez pas supprimer ce ticket.");
-                }
+                throw new ForbiddenException("Vous ne pouvez pas supprimer ce ticket.");
 
             await _ticketRepository.DeleteAsync(id);
             return true;

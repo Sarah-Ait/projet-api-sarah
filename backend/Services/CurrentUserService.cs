@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using backend.Constants;
+using backend.Exceptions;
 using backend.Interfaces;
 namespace backend.Services;
 
@@ -23,7 +24,7 @@ public class CurrentUserService : ICurrentUserService
 
             if (string.IsNullOrWhiteSpace(userIdClaim))
             {
-                throw new UnauthorizedAccessException("Utilisateur non authentifié.");
+                throw new UnauthorizedException("Utilisateur non authentifié.");
             }
 
             return int.Parse(userIdClaim);
@@ -39,7 +40,7 @@ public class CurrentUserService : ICurrentUserService
 
             if (string.IsNullOrWhiteSpace(roleClaim))
             {
-                throw new UnauthorizedAccessException("Rôle utilisateur introuvable.");
+                throw new UnauthorizedException("Rôle utilisateur introuvable.");
             }
 
             return roleClaim;

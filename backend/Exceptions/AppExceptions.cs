@@ -25,7 +25,7 @@ namespace backend.Exceptions
     }
 
     /// <summary>
-    /// Exception levée quand l'utilisateur n'a pas les permissions requises.
+    /// Exception levée quand l'utilisateur n'est pas authentifié.
     /// Correspond à une réponse HTTP 401 Unauthorized.
     /// </summary>
     [Serializable]
@@ -34,5 +34,17 @@ namespace backend.Exceptions
         public UnauthorizedException() { }
         public UnauthorizedException(string message) : base(message) { }
         public UnauthorizedException(string message, Exception inner) : base(message, inner) { }
+    }
+
+    /// <summary>
+    /// Exception levée quand l'utilisateur est authentifié mais n'a pas les permissions requises.
+    /// Correspond à une réponse HTTP 403 Forbidden.
+    /// </summary>
+    [Serializable]
+    public class ForbiddenException : Exception
+    {
+        public ForbiddenException() { }
+        public ForbiddenException(string message) : base(message) { }
+        public ForbiddenException(string message, Exception inner) : base(message, inner) { }
     }
 }

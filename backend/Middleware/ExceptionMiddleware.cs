@@ -35,6 +35,12 @@ namespace backend.Middleware
                 context.Response.ContentType = "application/json";
                 await context.Response.WriteAsJsonAsync(new { message = ex.Message });
             }
+            catch (ForbiddenException ex)
+            {
+                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                context.Response.ContentType = "application/json";
+                await context.Response.WriteAsJsonAsync(new { message = ex.Message });
+            }
             catch (Exception ex)
             {
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
