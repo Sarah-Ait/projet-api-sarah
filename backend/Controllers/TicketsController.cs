@@ -19,9 +19,9 @@ namespace backend.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TicketResponseDto>>> GetAllTickets()
+        public async Task<ActionResult<IEnumerable<TicketResponseDto>>> GetAllTickets([FromQuery] int? userId = null)
         {
-            var tickets = await _ticketService.GetAllTicketsAsync();
+            var tickets = await _ticketService.GetAllTicketsAsync(userId);
             return Ok(tickets);
         }
 

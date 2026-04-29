@@ -33,15 +33,19 @@ namespace backend.Services
             };
         }
 
-        public async Task<List<KanbanColumnResponseDto>> GetAllKanbanColumnsAsync()
+        public async Task<List<KanbanColumnResponseDto>> GetAllKanbanColumnsAsync(int? userId = null)
         {
-            var columns = await _kanbanColumnRepository.GetAllAsync();
+            List<KanbanColumn> columns;
 
-            if (!_currentUserService.IsAdmin)
+            if (_currentUserService.IsAdmin)
             {
-                columns = columns
-                    .Where(column => column.UserId == _currentUserService.UserId)
-                    .ToList();
+                columns = userId.HasValue
+                    ? await _kanbanColumnRepository.GetByUserIdAsync(userId.Value)
+                    : await _kanbanColumnRepository.GetAllAsync();
+            }
+            else
+            {
+                columns = await _kanbanColumnRepository.GetByUserIdAsync(_currentUserService.UserId);
             }
 
             return columns.Select(MapToKanbanColumnResponseDto).ToList();

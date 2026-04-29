@@ -5,6 +5,7 @@ namespace backend.Interfaces
     public interface IKanbanColumnRepository
     {
         Task<List<KanbanColumn>> GetAllAsync();
+        Task<List<KanbanColumn>> GetByUserIdAsync(int userId);
         Task<KanbanColumn?> GetByIdAsync(int id);
         Task<List<KanbanColumn>> GetByIdsAsync(IEnumerable<int> ids);
         Task<KanbanColumn> CreateAsync(KanbanColumn kanbanColumn);

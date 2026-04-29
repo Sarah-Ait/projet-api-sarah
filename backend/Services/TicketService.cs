@@ -35,15 +35,19 @@ namespace backend.Services
             };
         }
 
-        public async Task<List<TicketResponseDto>> GetAllTicketsAsync()
+        public async Task<List<TicketResponseDto>> GetAllTicketsAsync(int? userId = null)
         {
-            var tickets = await _ticketRepository.GetAllAsync();
+            List<Ticket> tickets;
 
-            if (!_currentUserService.IsAdmin)
+            if (_currentUserService.IsAdmin)
             {
-                tickets = tickets
-                    .Where(ticket => ticket.AssignedUserId == _currentUserService.UserId)
-                    .ToList();
+                tickets = userId.HasValue
+                    ? await _ticketRepository.GetByUserIdAsync(userId.Value)
+                    : await _ticketRepository.GetAllAsync();
+            }
+            else
+            {
+                tickets = await _ticketRepository.GetByUserIdAsync(_currentUserService.UserId);
             }
 
             return tickets.Select(MapToTicketResponseDto).ToList();

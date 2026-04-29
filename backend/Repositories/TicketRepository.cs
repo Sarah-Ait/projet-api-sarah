@@ -19,6 +19,13 @@ namespace backend.Repositories
             return await _context.Tickets.ToListAsync();
         }
 
+        public async Task<List<Ticket>> GetByUserIdAsync(int userId)
+        {
+            return await _context.Tickets
+                .Where(ticket => ticket.AssignedUserId == userId)
+                .ToListAsync();
+        }
+
         public async Task<Ticket?> GetByIdAsync(int id)
         {
             return await _context.Tickets.FindAsync(id);

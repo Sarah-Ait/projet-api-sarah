@@ -19,6 +19,13 @@ namespace backend.Repositories
             return await _context.KanbanColumns.ToListAsync();
         }
 
+        public async Task<List<KanbanColumn>> GetByUserIdAsync(int userId)
+        {
+            return await _context.KanbanColumns
+                .Where(column => column.UserId == userId)
+                .ToListAsync();
+        }
+
         public async Task<KanbanColumn?> GetByIdAsync(int id)
         {
             return await _context.KanbanColumns.FindAsync(id);

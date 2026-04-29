@@ -19,9 +19,9 @@ namespace backend.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<KanbanColumnResponseDto>>> GetAllKanbanColumns()
+        public async Task<ActionResult<IEnumerable<KanbanColumnResponseDto>>> GetAllKanbanColumns([FromQuery] int? userId = null)
         {
-            var kanbanColumns = await _kanbanColumnService.GetAllKanbanColumnsAsync();
+            var kanbanColumns = await _kanbanColumnService.GetAllKanbanColumnsAsync(userId);
             return Ok(kanbanColumns);
         }
 
