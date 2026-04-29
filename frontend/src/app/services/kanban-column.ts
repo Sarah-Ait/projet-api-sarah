@@ -13,4 +13,8 @@ export class KanbanColumnService {
     const url = userId !== undefined ? `${this.apiUrl}?userId=${userId}` : this.apiUrl;
     return this.http.get<KanbanColumn[]>(url);
   }
+
+  createColumn(name: string, userId: number): Observable<KanbanColumn> {
+    return this.http.post<KanbanColumn>(this.apiUrl, { name, userId });
+  }
 }

@@ -2,7 +2,12 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { API_BASE_URL } from '../core/api.config';
-import { CreateTicketRequest, Ticket } from '../models/ticket.model';
+import {
+  CreateTicketRequest,
+  MoveTicketRequest,
+  Ticket,
+  UpdateTicketRequest
+} from '../models/ticket.model';
 
 @Injectable({ providedIn: 'root' })
 export class TicketService {
@@ -16,6 +21,14 @@ export class TicketService {
 
   createTicket(request: CreateTicketRequest): Observable<Ticket> {
     return this.http.post<Ticket>(this.apiUrl, request);
+  }
+
+  updateTicket(id: number, request: UpdateTicketRequest): Observable<Ticket> {
+    return this.http.put<Ticket>(`${this.apiUrl}/${id}`, request);
+  }
+
+  moveTicket(id: number, request: MoveTicketRequest): Observable<Ticket> {
+    return this.http.patch<Ticket>(`${this.apiUrl}/${id}/move`, request);
   }
 
   deleteTicket(id: number): Observable<void> {

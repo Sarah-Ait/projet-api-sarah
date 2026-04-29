@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { KanbanColumn } from '../../models/kanban-column.model';
 import { Ticket } from '../../models/ticket.model';
 import { Auth } from '../../services/auth';
@@ -10,7 +11,7 @@ import { TicketService } from '../../services/ticket';
 
 @Component({
   selector: 'app-board',
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, DragDropModule],
   templateUrl: './board.html',
   styleUrl: './board.css'
 })
@@ -31,6 +32,14 @@ export class Board implements OnInit {
   newTicketTimeSpentHours = 0;
   newTicketColumnId: number | null = null;
 
+  editingTicket: Ticket | null = null;
+  editTitle = '';
+  editDescription = '';
+  editTimeSpentHours = 0;
+
+  creatingColumn = false;
+  newColumnName = '';
+
   ngOnInit(): void {
     this.loadBoard();
   }
@@ -47,7 +56,7 @@ export class Board implements OnInit {
 
   loadBoard(): void {
     this.kanbanColumnService.getColumns().subscribe({
-      next: columns => (this.columns = columns),
+      next: columns => (this.columns = [...columns].sort((a, b) => a.order - b.order)),
       error: () => (this.errorMessage = 'Impossible de charger les colonnes.')
     });
 
@@ -70,6 +79,14 @@ export class Board implements OnInit {
 
   getTotalHours(): number {
     return this.tickets.reduce((total, ticket) => total + ticket.timeSpentHours, 0);
+  }
+
+  getColumnDropListId(columnId: number): string {
+    return `column-${columnId}`;
+  }
+
+  getConnectedColumnIds(): string[] {
+    return this.columns.map(column => this.getColumnDropListId(column.id));
   }
 
   createTicket(): void {
@@ -98,6 +115,95 @@ export class Board implements OnInit {
       });
   }
 
+  openEditModal(ticket: Ticket): void {
+    this.editingTicket = ticket;
+    this.editTitle = ticket.title;
+    this.editDescription = ticket.description;
+    this.editTimeSpentHours = ticket.timeSpentHours;
+  }
+
+  closeEditModal(): void {
+    this.editingTicket = null;
+  }
+
+  saveEdit(): void {
+    if (!this.editingTicket || !this.editTitle) {
+      return;
+    }
+
+    const id = this.editingTicket.id;
+
+    this.ticketService
+      .updateTicket(id, {
+        title: this.editTitle,
+        description: this.editDescription,
+        timeSpentHours: this.editTimeSpentHours
+      })
+      .subscribe({
+        next: updated => {
+          this.tickets = this.tickets.map(ticket => (ticket.id === id ? updated : ticket));
+          this.errorMessage = '';
+          this.closeEditModal();
+        },
+        error: () => (this.errorMessage = 'Impossible de modifier le ticket.')
+      });
+  }
+
+  onTicketDrop(event: CdkDragDrop<Ticket[]>, targetColumnId: number): void {
+    const ticket = event.item.data as Ticket;
+
+    if (ticket.kanbanColumnId === targetColumnId) {
+      return;
+    }
+
+    const previousColumnId = ticket.kanbanColumnId;
+    ticket.kanbanColumnId = targetColumnId;
+
+    this.ticketService.moveTicket(ticket.id, { targetColumnId }).subscribe({
+      next: updated => {
+        this.tickets = this.tickets.map(t => (t.id === updated.id ? updated : t));
+      },
+      error: () => {
+        ticket.kanbanColumnId = previousColumnId;
+        this.errorMessage = 'Impossible de déplacer le ticket.';
+      }
+    });
+  }
+
+  openColumnCreator(): void {
+    this.creatingColumn = true;
+    this.newColumnName = '';
+  }
+
+  cancelColumnCreator(): void {
+    this.creatingColumn = false;
+    this.newColumnName = '';
+  }
+
+  saveNewColumn(): void {
+    const name = this.newColumnName.trim();
+
+    if (!name) {
+      return;
+    }
+
+    const userId = this.auth.getCurrentUserId();
+
+    if (userId === null) {
+      this.errorMessage = 'Utilisateur non connecté.';
+      return;
+    }
+
+    this.kanbanColumnService.createColumn(name, userId).subscribe({
+      next: column => {
+        this.columns = [...this.columns, column].sort((a, b) => a.order - b.order);
+        this.errorMessage = '';
+        this.cancelColumnCreator();
+      },
+      error: () => (this.errorMessage = 'Impossible de créer la colonne.')
+    });
+  }
+
   deleteTicket(ticketId: number): void {
     if (!confirm('Voulez-vous vraiment supprimer ce ticket ?')) {
       return;
@@ -105,8 +211,8 @@ export class Board implements OnInit {
 
     this.ticketService.deleteTicket(ticketId).subscribe({
       next: () => {
+        this.tickets = this.tickets.filter(ticket => ticket.id !== ticketId);
         this.errorMessage = '';
-        this.loadBoard();
       },
       error: () => (this.errorMessage = 'Impossible de supprimer le ticket.')
     });

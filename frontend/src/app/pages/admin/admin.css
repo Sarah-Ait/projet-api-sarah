@@ -1,13 +1,28 @@
 .admin-page {
   min-height: 100vh;
   padding: 32px;
-  background: #f4f6f8;
-  font-family: Arial, sans-serif;
+  background: var(--color-bg);
+}
+
+.admin-page h1 {
+  margin: 0 0 8px;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.admin-page p {
+  margin: 0 0 20px;
+  color: var(--color-text-secondary);
 }
 
 .admin-page a {
   display: inline-block;
-  margin-top: 16px;
-  color: #2563eb;
-  font-weight: bold;
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.admin-page a:hover {
+  color: var(--color-primary-hover);
+  text-decoration: underline;
 }

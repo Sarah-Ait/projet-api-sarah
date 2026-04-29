@@ -14,3 +14,13 @@ export interface CreateTicketRequest {
   timeSpentHours: number;
   kanbanColumnId: number;
 }
+
+export interface UpdateTicketRequest {
+  title: string;
+  description: string;
+  timeSpentHours: number;
+}
+
+export interface MoveTicketRequest {
+  targetColumnId: number;
+}

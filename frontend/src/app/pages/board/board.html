@@ -10,34 +10,19 @@
     </div>
 
     <div class="topbar-right">
-      <div class="summary-badge">
-        Total : {{ getTotalHours() }} h
-      </div>
+      <div class="summary-badge">Total : {{ getTotalHours() }} h</div>
 
-      <a
-        *ngIf="isAdmin()"
-        routerLink="/admin"
-        class="icon-button admin-button"
-        title="Espace admin"
-      >
+      <a *ngIf="isAdmin()" routerLink="/admin" class="icon-button admin-button">
         Admin
       </a>
 
-      <button
-        type="button"
-        class="icon-button logout-button"
-        title="Se déconnecter"
-        (click)="logout()"
-      >
-        <span class="logout-icon">🚪</span>
-        <span>Logout</span>
+      <button type="button" class="icon-button logout-button" (click)="logout()">
+        Déconnexion
       </button>
     </div>
   </header>
 
-  <p class="error-message" *ngIf="errorMessage">
-    {{ errorMessage }}
-  </p>
+  <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
 
   <main class="board-layout">
     <aside class="creator-panel">
@@ -82,7 +67,7 @@
         </div>
 
         <div class="form-field">
-          <label for="kanbanColumnId">Colonne / état</label>
+          <label for="kanbanColumnId">Colonne</label>
           <select
             id="kanbanColumnId"
             name="kanbanColumnId"
@@ -96,9 +81,7 @@
           </select>
         </div>
 
-        <button type="submit" class="create-button">
-          Ajouter la tâche
-        </button>
+        <button type="submit" class="create-button">Ajouter la tâche</button>
       </form>
     </aside>
 
@@ -115,13 +98,23 @@
               <p>{{ getTicketsByColumn(column.id).length }} tâche(s)</p>
             </div>
 
-            <span class="column-hours">
-              {{ getTotalHoursByColumn(column.id) }} h
-            </span>
+            <span class="column-hours">{{ getTotalHoursByColumn(column.id) }} h</span>
           </div>
 
-          <div class="tickets-list">
-            <div class="ticket-card" *ngFor="let ticket of getTicketsByColumn(column.id)">
+          <div
+            class="tickets-list"
+            cdkDropList
+            [id]="getColumnDropListId(column.id)"
+            [cdkDropListData]="getTicketsByColumn(column.id)"
+            [cdkDropListConnectedTo]="getConnectedColumnIds()"
+            (cdkDropListDropped)="onTicketDrop($event, column.id)"
+          >
+            <div
+              class="ticket-card"
+              *ngFor="let ticket of getTicketsByColumn(column.id)"
+              cdkDrag
+              [cdkDragData]="ticket"
+            >
               <div class="ticket-top">
                 <h3>{{ ticket.title }}</h3>
               </div>
@@ -131,24 +124,97 @@
               </p>
 
               <div class="ticket-meta">
-                <span class="ticket-time">
-                  Est. {{ ticket.timeSpentHours }} h
-                </span>
+                <span class="ticket-time">Est. {{ ticket.timeSpentHours }} h</span>
               </div>
 
               <div class="ticket-actions">
-                <button
-                  type="button"
-                  class="delete-button"
-                  (click)="deleteTicket(ticket.id)"
-                >
+                <button type="button" class="edit-button" (click)="openEditModal(ticket)">
+                  Modifier
+                </button>
+                <button type="button" class="delete-button" (click)="deleteTicket(ticket.id)">
                   Supprimer
                 </button>
               </div>
             </div>
           </div>
         </div>
+
+        <div class="column-card column-add" *ngIf="isAdmin() && !creatingColumn">
+          <button type="button" class="add-column-button" (click)="openColumnCreator()">
+            + Nouvelle colonne
+          </button>
+        </div>
+
+        <div class="column-card column-add" *ngIf="creatingColumn">
+          <form (ngSubmit)="saveNewColumn()" class="creator-form">
+            <div class="form-field">
+              <label for="newColumnName">Nom de la colonne</label>
+              <input
+                id="newColumnName"
+                type="text"
+                name="newColumnName"
+                [(ngModel)]="newColumnName"
+                placeholder="Ex : En revue"
+                required
+                autofocus
+              />
+            </div>
+            <div class="modal-actions">
+              <button type="button" class="cancel-button" (click)="cancelColumnCreator()">
+                Annuler
+              </button>
+              <button type="submit" class="save-button">Créer</button>
+            </div>
+          </form>
+        </div>
       </div>
     </section>
   </main>
+
+  <div class="modal-overlay" *ngIf="editingTicket" (click)="closeEditModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <h2>Modifier la tâche</h2>
+
+      <form (ngSubmit)="saveEdit()" class="creator-form">
+        <div class="form-field">
+          <label for="editTitle">Titre</label>
+          <input
+            id="editTitle"
+            type="text"
+            name="editTitle"
+            [(ngModel)]="editTitle"
+            required
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="editDescription">Description</label>
+          <textarea
+            id="editDescription"
+            name="editDescription"
+            [(ngModel)]="editDescription"
+            rows="4"
+          ></textarea>
+        </div>
+
+        <div class="form-field">
+          <label for="editTimeSpentHours">Temps passé (h)</label>
+          <input
+            id="editTimeSpentHours"
+            type="number"
+            name="editTimeSpentHours"
+            [(ngModel)]="editTimeSpentHours"
+            min="0"
+          />
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="cancel-button" (click)="closeEditModal()">
+            Annuler
+          </button>
+          <button type="submit" class="save-button">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
