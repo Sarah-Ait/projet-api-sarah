@@ -9,6 +9,6 @@ namespace backend.Interfaces
         Task<KanbanColumnResponseDto> CreateKanbanColumnAsync(CreateKanbanColumnDto createKanbanColumnDto);
         Task<KanbanColumnResponseDto> UpdateKanbanColumnAsync(int id, UpdateKanbanColumnDto updateKanbanColumnDto);
         Task<List<KanbanColumnResponseDto>> ReorderKanbanColumnsAsync(ReorderKanbanColumnsDto reorderKanbanColumnsDto);
-        Task<bool> DeleteKanbanColumnAsync(int id);
+        Task DeleteKanbanColumnAsync(int id);
     }
 }

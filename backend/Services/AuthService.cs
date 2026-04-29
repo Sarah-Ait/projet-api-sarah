@@ -31,8 +31,8 @@ namespace backend.Services
 
         public async Task<AuthResult?> LoginAsync(LoginRequestDto loginRequestDto)
         {
-            var users = await _userRepository.GetAllAsync();
-            var user = users.FirstOrDefault(u => u.Email == loginRequestDto.Email);
+            var normalizedEmail = loginRequestDto.Email.Trim().ToLowerInvariant();
+            var user = await _userRepository.GetByEmailAsync(normalizedEmail);
 
             if (user == null)
                 return null;

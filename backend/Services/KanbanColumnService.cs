@@ -9,7 +9,6 @@ namespace backend.Services
     {
         private readonly IKanbanColumnRepository _kanbanColumnRepository;
         private readonly IUserRepository _userRepository;
-
         private readonly ICurrentUserService _currentUserService;
 
         public KanbanColumnService(
@@ -63,16 +62,18 @@ namespace backend.Services
 
         public async Task<KanbanColumnResponseDto> CreateKanbanColumnAsync(CreateKanbanColumnDto createKanbanColumnDto)
         {
-            // Validation - Check if user exists (business rule)
             var user = await _userRepository.GetByIdAsync(createKanbanColumnDto.UserId);
 
             if (user == null)
                 throw new NotFoundException($"User with ID {createKanbanColumnDto.UserId} not found");
 
+            var existingColumns = await _kanbanColumnRepository.GetByUserIdAsync(createKanbanColumnDto.UserId);
+            var nextOrder = existingColumns.Any() ? existingColumns.Max(column => column.Order) + 1 : 1;
+
             var kanbanColumn = new KanbanColumn
             {
                 Name = createKanbanColumnDto.Name,
-                Order = createKanbanColumnDto.Order,
+                Order = nextOrder,
                 UserId = createKanbanColumnDto.UserId
             };
 
@@ -125,7 +126,7 @@ namespace backend.Services
                 .ToList();
         }
 
-        public async Task<bool> DeleteKanbanColumnAsync(int id)
+        public async Task DeleteKanbanColumnAsync(int id)
         {
             var existingKanbanColumn = await _kanbanColumnRepository.GetByIdAsync(id);
 
@@ -133,7 +134,6 @@ namespace backend.Services
                 throw new NotFoundException($"Kanban column with ID {id} not found");
 
             await _kanbanColumnRepository.DeleteAsync(id);
-            return true;
         }
     }
 }

@@ -9,7 +9,6 @@ namespace backend.DTOs
         public string Email { get; set; } = string.Empty;
 
         [Required]
-        [MinLength(3)]
         public string Password { get; set; } = string.Empty;
 
         public bool RememberMe { get; set; }

@@ -1,3 +1,4 @@
+using backend.Constants;
 using backend.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -20,8 +21,10 @@ public static class AdminSeeder
             return;
         }
 
+        var normalizedEmail = adminEmail.Trim().ToLowerInvariant();
+
         var adminAlreadyExists = await context.Users
-            .AnyAsync(user => user.Email == adminEmail);
+            .AnyAsync(user => user.Email == normalizedEmail);
 
         if (adminAlreadyExists)
         {
@@ -31,8 +34,8 @@ public static class AdminSeeder
         var admin = new User
         {
             Name = "Admin",
-            Email = adminEmail,
-            Role = "Admin"
+            Email = normalizedEmail,
+            Role = Roles.Admin
         };
 
         var passwordHasher = new PasswordHasher<User>();

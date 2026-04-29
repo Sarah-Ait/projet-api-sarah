@@ -128,7 +128,7 @@ namespace backend.Services
             return MapToTicketResponseDto(movedTicket);
         }
 
-        public async Task<bool> DeleteTicketAsync(int id)
+        public async Task DeleteTicketAsync(int id)
         {
             var existingTicket = await _ticketRepository.GetByIdAsync(id);
 
@@ -139,7 +139,6 @@ namespace backend.Services
                 throw new ForbiddenException("Vous ne pouvez pas supprimer ce ticket.");
 
             await _ticketRepository.DeleteAsync(id);
-            return true;
         }
     }
 }
