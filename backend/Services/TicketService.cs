@@ -134,6 +134,11 @@ namespace backend.Services
 
             existingTicket.KanbanColumnId = moveTicketDto.TargetColumnId;
 
+            if (_currentUserService.IsAdmin && existingTicket.AssignedUserId != _currentUserService.UserId)
+            {
+                existingTicket.AdminNote = "Déplacé par l'admin";
+            }
+
             var movedTicket = await _ticketRepository.UpdateAsync(existingTicket);
             return MapToTicketResponseDto(movedTicket);
         }

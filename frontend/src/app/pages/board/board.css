@@ -248,7 +248,7 @@
 
 .column-card {
   width: 280px;
-  min-height: 480px;
+  height: 600px;
   background: var(--color-surface-soft);
   border-radius: var(--radius-lg);
   padding: 16px;
@@ -365,7 +365,28 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  min-height: 60px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  margin-right: -8px;
+  padding-right: 8px;
+}
+
+.tickets-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tickets-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tickets-list::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+.tickets-list::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
 }
 
 .ticket-card {

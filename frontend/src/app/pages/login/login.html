@@ -1,7 +1,23 @@
 <div class="login-page">
   <div class="login-card">
+    <div class="brand-header">
+      <svg class="brand-logo" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="20" cy="20" r="18" fill="#a78bfa" />
+        <text
+          x="20"
+          y="27"
+          text-anchor="middle"
+          fill="#ffffff"
+          font-size="20"
+          font-weight="700"
+          font-family="-apple-system, sans-serif"
+        >K</text>
+      </svg>
+      <span class="brand-name">Kan-be</span>
+    </div>
+
     <h1>Connexion</h1>
-    <p>Connectez-vous pour accéder au tableau Kanban.</p>
+    <p>Connectez-vous pour accéder à votre Kanban.</p>
 
     <form (ngSubmit)="onLogin()">
       <label>Email</label>

@@ -1,0 +1,36 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: kanbe-backend
+    ports:
+      - "5065:5065"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__Default=Data Source=/app/data/app.db
+    volumes:
+      - kanbe-data:/app/data
+    restart: unless-stopped
+    networks:
+      - kanbe-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: kanbe-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - kanbe-net
+
+volumes:
+  kanbe-data:
+
+networks:
+  kanbe-net:
+    driver: bridge
