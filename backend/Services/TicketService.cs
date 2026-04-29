@@ -40,6 +40,14 @@ namespace backend.Services
         public async Task<List<TicketResponseDto>> GetAllTicketsAsync()
         {
             var tickets = await _ticketRepository.GetAllAsync();
+
+            if (!_currentUserService.IsAdmin)
+            {
+                tickets = tickets
+                    .Where(ticket => ticket.AssignedUserId == _currentUserService.UserId)
+                    .ToList();
+            }
+
             return tickets.Select(MapToTicketResponseDto).ToList();
         }
 

@@ -19,6 +19,7 @@ namespace backend.Services
         {
             _kanbanColumnRepository = kanbanColumnRepository;
             _userRepository = userRepository;
+            _currentUserService = currentUserService;
         }
 
         private KanbanColumnResponseDto MapToKanbanColumnResponseDto(KanbanColumn kanbanColumn)
@@ -34,8 +35,16 @@ namespace backend.Services
 
         public async Task<List<KanbanColumnResponseDto>> GetAllKanbanColumnsAsync()
         {
-            var kanbanColumns = await _kanbanColumnRepository.GetAllAsync();
-            return kanbanColumns.Select(MapToKanbanColumnResponseDto).ToList();
+            var columns = await _kanbanColumnRepository.GetAllAsync();
+
+            if (!_currentUserService.IsAdmin)
+            {
+                columns = columns
+                    .Where(column => column.UserId == _currentUserService.UserId)
+                    .ToList();
+            }
+
+            return columns.Select(MapToKanbanColumnResponseDto).ToList();
         }
 
         public async Task<KanbanColumnResponseDto> GetKanbanColumnByIdAsync(int id)

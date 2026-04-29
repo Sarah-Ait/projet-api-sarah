@@ -34,6 +34,9 @@ builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 builder.Services.AddScoped<ITicketService, TicketService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)// on ajoute un systeme d'authentification le mecanisme par defaut sera JWT Bearer
     .AddJwtBearer(options =>
     {

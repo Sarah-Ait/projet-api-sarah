@@ -8,13 +8,17 @@ namespace backend.Services
 {
     public class UserService : IUserService
     {
-        private readonly IUserRepository _userRepository;
-        private readonly PasswordHasher<User> _passwordHasher; // outil de hash
+       private readonly IUserRepository _userRepository;
+        private readonly IKanbanColumnRepository _kanbanColumnRepository;
+        private readonly PasswordHasher<User> _passwordHasher;
 
-        public UserService(IUserRepository userRepository)
+       public UserService(
+            IUserRepository userRepository,
+            IKanbanColumnRepository kanbanColumnRepository)
         {
             _userRepository = userRepository;
-            _passwordHasher = new PasswordHasher<User>(); // crée l'outil de hash
+            _kanbanColumnRepository = kanbanColumnRepository;
+            _passwordHasher = new PasswordHasher<User>();
         }
 
         private UserResponseDto MapToUserResponseDto(User user)
@@ -44,7 +48,7 @@ namespace backend.Services
             return MapToUserResponseDto(user);
         }
 
-        public async Task<UserResponseDto> CreateUserAsync(CreateUserDto createUserDto)
+                public async Task<UserResponseDto> CreateUserAsync(CreateUserDto createUserDto)
         {
             var user = new User
             {
@@ -52,8 +56,38 @@ namespace backend.Services
                 Email = createUserDto.Email,
                 Role = "Standard"
             };
-            user.PasswordHash = _passwordHasher.HashPassword(user, createUserDto.Password); // stocke un hash et pas le mot de passe brut
+
+            user.PasswordHash = _passwordHasher.HashPassword(user, createUserDto.Password);
+
             var createdUser = await _userRepository.CreateAsync(user);
+
+            var defaultColumns = new List<KanbanColumn>
+            {
+                new KanbanColumn
+                {
+                    Name = "À faire",
+                    Order = 1,
+                    UserId = createdUser.Id
+                },
+                new KanbanColumn
+                {
+                    Name = "En cours",
+                    Order = 2,
+                    UserId = createdUser.Id
+                },
+                new KanbanColumn
+                {
+                    Name = "Terminées",
+                    Order = 3,
+                    UserId = createdUser.Id
+                }
+            };
+
+            foreach (var column in defaultColumns)
+            {
+                await _kanbanColumnRepository.CreateAsync(column);
+            }
+
             return MapToUserResponseDto(createdUser);
         }
 
