@@ -115,6 +115,24 @@
   font-weight: 500;
 }
 
+.viewing-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 16px;
+  padding: 12px 18px;
+  background: var(--color-primary-soft);
+  color: var(--color-primary-hover);
+  border-radius: var(--radius);
+  font-size: 14px;
+  flex-wrap: wrap;
+}
+
+.viewing-banner strong {
+  font-weight: 700;
+}
+
 .board-layout {
   display: grid;
   grid-template-columns: 320px 1fr;

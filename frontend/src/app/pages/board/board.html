@@ -24,6 +24,16 @@
 
   <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
 
+  <div class="viewing-banner" *ngIf="viewingUserId !== null">
+    <span>
+      Tu consultes le Kanban de
+      <strong>{{ viewingUserName || 'cet utilisateur' }}</strong>
+    </span>
+    <button type="button" class="cancel-button" (click)="exitViewing()">
+      Retour à mon Kanban
+    </button>
+  </div>
+
   <main class="board-layout">
     <aside class="creator-panel">
       <h2>Créer une tâche</h2>

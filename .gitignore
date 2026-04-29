@@ -4,3 +4,8 @@ obj/
 dist/
 .vscode/
 .claude/
+
+# SQLite — base de données locale, régénérée via les migrations EF
+*.db
+*.db-shm
+*.db-wal

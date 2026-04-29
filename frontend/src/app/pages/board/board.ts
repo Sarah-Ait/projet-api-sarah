@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { KanbanColumn } from '../../models/kanban-column.model';
 import { Ticket } from '../../models/ticket.model';
 import { Auth } from '../../services/auth';
 import { KanbanColumnService } from '../../services/kanban-column';
 import { TicketService } from '../../services/ticket';
+import { UserService } from '../../services/user';
 
 @Component({
   selector: 'app-board',
@@ -18,14 +19,19 @@ import { TicketService } from '../../services/ticket';
 export class Board implements OnInit {
   private readonly kanbanColumnService = inject(KanbanColumnService);
   private readonly ticketService = inject(TicketService);
+  private readonly userService = inject(UserService);
   private readonly auth = inject(Auth);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   readonly isAdmin = this.auth.isAdmin;
 
   columns: KanbanColumn[] = [];
   tickets: Ticket[] = [];
   errorMessage = '';
+
+  viewingUserId: number | null = null;
+  viewingUserName: string | null = null;
 
   newTicketTitle = '';
   newTicketDescription = '';
@@ -41,7 +47,26 @@ export class Board implements OnInit {
   newColumnName = '';
 
   ngOnInit(): void {
-    this.loadBoard();
+    this.route.queryParams.subscribe(params => {
+      const userIdParam = params['userId'];
+      const parsedUserId = userIdParam ? Number(userIdParam) : null;
+
+      this.viewingUserId = this.isAdmin() ? parsedUserId : null;
+      this.viewingUserName = null;
+
+      if (this.viewingUserId !== null) {
+        this.userService.getUserById(this.viewingUserId).subscribe({
+          next: user => (this.viewingUserName = user.name),
+          error: () => (this.viewingUserName = null)
+        });
+      }
+
+      this.loadBoard();
+    });
+  }
+
+  exitViewing(): void {
+    this.router.navigate(['/board']);
   }
 
   logout(): void {
@@ -55,12 +80,14 @@ export class Board implements OnInit {
   }
 
   loadBoard(): void {
-    this.kanbanColumnService.getColumns().subscribe({
+    const userId = this.viewingUserId ?? undefined;
+
+    this.kanbanColumnService.getColumns(userId).subscribe({
       next: columns => (this.columns = [...columns].sort((a, b) => a.order - b.order)),
       error: () => (this.errorMessage = 'Impossible de charger les colonnes.')
     });
 
-    this.ticketService.getTickets().subscribe({
+    this.ticketService.getTickets(userId).subscribe({
       next: tickets => (this.tickets = tickets),
       error: () => (this.errorMessage = 'Impossible de charger les tickets.')
     });
@@ -187,7 +214,7 @@ export class Board implements OnInit {
       return;
     }
 
-    const userId = this.auth.getCurrentUserId();
+    const userId = this.viewingUserId ?? this.auth.getCurrentUserId();
 
     if (userId === null) {
       this.errorMessage = 'Utilisateur non connecté.';

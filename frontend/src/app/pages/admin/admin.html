@@ -1,5 +1,64 @@
 <div class="admin-page">
-  <h1>Espace admin</h1>
-  <p>Gestion des utilisateurs et vue globale du Kanban.</p>
-  <a routerLink="/board">← Retour au tableau</a>
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="brand-dot"></div>
+      <span class="brand-name">KanbanApp</span>
+
+      <nav class="topbar-nav">
+        <a routerLink="/board" class="nav-link">Tasks Board</a>
+        <a class="nav-link active">Admin</a>
+      </nav>
+    </div>
+
+    <div class="topbar-right">
+      <button type="button" class="icon-button logout-button" (click)="logout()">
+        Déconnexion
+      </button>
+    </div>
+  </header>
+
+  <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+  <main class="admin-section">
+    <div class="section-header">
+      <h1>Utilisateurs</h1>
+      <p>Gère les comptes et consulte le Kanban de chaque utilisateur.</p>
+    </div>
+
+    <div class="users-list" *ngIf="users.length > 0; else emptyState">
+      <div class="user-card" *ngFor="let user of users">
+        <div class="user-info">
+          <div class="user-avatar">{{ getInitial(user.name) }}</div>
+          <div class="user-details">
+            <h3>{{ user.name }}</h3>
+            <p>{{ user.email }}</p>
+            <span
+              class="user-role"
+              [class.user-role-admin]="user.role === 'Admin'"
+            >
+              {{ user.role }}
+            </span>
+          </div>
+        </div>
+
+        <div class="user-actions">
+          <button type="button" class="view-button" (click)="viewUserBoard(user.id)">
+            Voir son Kanban
+          </button>
+          <button
+            type="button"
+            class="delete-button"
+            (click)="deleteUser(user)"
+            *ngIf="user.role !== 'Admin' && user.id !== currentUserId()"
+          >
+            Supprimer
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #emptyState>
+      <p class="empty-state">Aucun utilisateur pour le moment.</p>
+    </ng-template>
+  </main>
 </div>

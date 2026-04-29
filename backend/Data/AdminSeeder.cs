@@ -23,25 +23,36 @@ public static class AdminSeeder
 
         var normalizedEmail = adminEmail.Trim().ToLowerInvariant();
 
-        var adminAlreadyExists = await context.Users
-            .AnyAsync(user => user.Email == normalizedEmail);
+        var admin = await context.Users
+            .FirstOrDefaultAsync(user => user.Email == normalizedEmail);
 
-        if (adminAlreadyExists)
+        if (admin == null)
         {
-            return;
+            admin = new User
+            {
+                Name = "Admin",
+                Email = normalizedEmail,
+                Role = Roles.Admin
+            };
+
+            var passwordHasher = new PasswordHasher<User>();
+            admin.PasswordHash = passwordHasher.HashPassword(admin, adminPassword);
+
+            context.Users.Add(admin);
+            await context.SaveChangesAsync();
         }
 
-        var admin = new User
+        var adminHasColumns = await context.KanbanColumns
+            .AnyAsync(column => column.UserId == admin.Id);
+
+        if (!adminHasColumns)
         {
-            Name = "Admin",
-            Email = normalizedEmail,
-            Role = Roles.Admin
-        };
-
-        var passwordHasher = new PasswordHasher<User>();
-        admin.PasswordHash = passwordHasher.HashPassword(admin, adminPassword);
-
-        context.Users.Add(admin);
-        await context.SaveChangesAsync();
+            context.KanbanColumns.AddRange(
+                new KanbanColumn { Name = "À faire", Order = 1, UserId = admin.Id },
+                new KanbanColumn { Name = "En cours", Order = 2, UserId = admin.Id },
+                new KanbanColumn { Name = "Terminées", Order = 3, UserId = admin.Id }
+            );
+            await context.SaveChangesAsync();
+        }
     }
 }
