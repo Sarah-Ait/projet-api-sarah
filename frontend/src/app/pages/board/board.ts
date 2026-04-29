@@ -187,14 +187,19 @@ export class Board implements OnInit {
     }
 
     const previousColumnId = ticket.kanbanColumnId;
-    ticket.kanbanColumnId = targetColumnId;
+
+    this.tickets = this.tickets.map(t =>
+      t.id === ticket.id ? { ...t, kanbanColumnId: targetColumnId } : t
+    );
 
     this.ticketService.moveTicket(ticket.id, { targetColumnId }).subscribe({
       next: updated => {
         this.tickets = this.tickets.map(t => (t.id === updated.id ? updated : t));
       },
       error: () => {
-        ticket.kanbanColumnId = previousColumnId;
+        this.tickets = this.tickets.map(t =>
+          t.id === ticket.id ? { ...t, kanbanColumnId: previousColumnId } : t
+        );
         this.errorMessage = 'Impossible de déplacer le ticket.';
       }
     });

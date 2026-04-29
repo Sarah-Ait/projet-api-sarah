@@ -3,9 +3,10 @@
     <h1>Créer un compte</h1>
     <p>Créez un compte pour accéder à votre Kanban.</p>
 
-    <form (ngSubmit)="onRegister()">
-      <label>Nom</label>
+    <form #registerForm="ngForm" (ngSubmit)="onRegister()">
+      <label for="name">Nom</label>
       <input
+        id="name"
         type="text"
         name="name"
         [(ngModel)]="name"
@@ -13,37 +14,52 @@
         required
       />
 
-      <label>Email</label>
+      <label for="email">Email</label>
       <input
+        id="email"
         type="email"
         name="email"
         [(ngModel)]="email"
+        #emailField="ngModel"
         placeholder="email@example.com"
+        email
         required
       />
+      <p
+        class="field-error"
+        *ngIf="emailField.invalid && (emailField.dirty || emailField.touched)"
+      >
+        Adresse email invalide.
+      </p>
 
-      <label>Mot de passe</label>
+      <label for="password">Mot de passe</label>
       <input
+        id="password"
         type="password"
         name="password"
         [(ngModel)]="password"
-        placeholder="Mot de passe"
+        placeholder="Au moins 8 caractères, 1 majuscule, 1 chiffre"
         required
       />
 
-      <p class="error-message" *ngIf="errorMessage">
-        {{ errorMessage }}
-      </p>
+      <ul class="password-rules" *ngIf="password">
+        <li [class.met]="hasMinLength">Au moins 8 caractères</li>
+        <li [class.met]="hasUppercase">Une majuscule</li>
+        <li [class.met]="hasLowercase">Une minuscule</li>
+        <li [class.met]="hasDigit">Un chiffre</li>
+      </ul>
 
-      <p class="success-message" *ngIf="successMessage">
-        {{ successMessage }}
-      </p>
+      <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
+      <p class="success-message" *ngIf="successMessage">{{ successMessage }}</p>
 
-      <button type="submit">Créer le compte</button>
+      <button
+        type="submit"
+        [disabled]="registerForm.invalid || !isPasswordValid"
+      >
+        Créer le compte
+      </button>
     </form>
 
-    <a routerLink="/" class="auth-link">
-      Déjà un compte ? Se connecter
-    </a>
+    <a routerLink="/" class="auth-link">Déjà un compte ? Se connecter</a>
   </div>
 </div>
