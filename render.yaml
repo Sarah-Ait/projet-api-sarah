@@ -3,7 +3,6 @@ services:
     name: kanbe-backend
     runtime: docker
     rootDir: backend
-    dockerfilePath: ./Dockerfile
     plan: free
     healthCheckPath: /swagger
     envVars:
@@ -34,7 +33,6 @@ services:
     name: kanbe-frontend
     runtime: docker
     rootDir: frontend
-    dockerfilePath: ./Dockerfile
     plan: free
     dockerBuildArgs:
       API_URL: https://kanbe-backend.onrender.com
