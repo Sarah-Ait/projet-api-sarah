@@ -7,6 +7,7 @@ public class TicketResponseDto
     public string Description { get; set; } = string.Empty;
     public double TimeSpentHours { get; set; }
     public DateTime CreatedAt { get; set; }
+    public string? AdminNote { get; set; }
     public int AssignedUserId { get; set; }
     public int KanbanColumnId { get; set; }
 }

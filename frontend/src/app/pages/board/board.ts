@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { KanbanColumn } from '../../models/kanban-column.model';
 import { Ticket } from '../../models/ticket.model';
 import { Auth } from '../../services/auth';
@@ -45,6 +45,9 @@ export class Board implements OnInit {
 
   creatingColumn = false;
   newColumnName = '';
+
+  editingColumnId: number | null = null;
+  editingColumnName = '';
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
@@ -205,6 +208,72 @@ export class Board implements OnInit {
   cancelColumnCreator(): void {
     this.creatingColumn = false;
     this.newColumnName = '';
+  }
+
+  startEditColumn(column: KanbanColumn): void {
+    this.editingColumnId = column.id;
+    this.editingColumnName = column.name;
+  }
+
+  cancelEditColumn(): void {
+    this.editingColumnId = null;
+    this.editingColumnName = '';
+  }
+
+  saveEditColumn(): void {
+    const id = this.editingColumnId;
+    const name = this.editingColumnName.trim();
+
+    if (id === null || !name) {
+      return;
+    }
+
+    this.kanbanColumnService.updateColumn(id, name).subscribe({
+      next: updated => {
+        this.columns = this.columns.map(column => (column.id === id ? updated : column));
+        this.errorMessage = '';
+        this.cancelEditColumn();
+      },
+      error: () => (this.errorMessage = 'Impossible de renommer la colonne.')
+    });
+  }
+
+  deleteColumn(column: KanbanColumn): void {
+    if (!confirm(`Supprimer la colonne « ${column.name} » et tous ses tickets ?`)) {
+      return;
+    }
+
+    this.kanbanColumnService.deleteColumn(column.id).subscribe({
+      next: () => {
+        this.columns = this.columns.filter(existing => existing.id !== column.id);
+        this.tickets = this.tickets.filter(ticket => ticket.kanbanColumnId !== column.id);
+        this.errorMessage = '';
+      },
+      error: () => (this.errorMessage = 'Impossible de supprimer la colonne.')
+    });
+  }
+
+  onColumnDrop(event: CdkDragDrop<KanbanColumn[]>): void {
+    if (event.previousIndex === event.currentIndex) {
+      return;
+    }
+
+    const reordered = [...this.columns];
+    moveItemInArray(reordered, event.previousIndex, event.currentIndex);
+    this.columns = reordered;
+
+    const orderedColumnIds = reordered.map(column => column.id);
+
+    this.kanbanColumnService.reorderColumns(orderedColumnIds).subscribe({
+      next: updated => {
+        this.columns = [...updated].sort((a, b) => a.order - b.order);
+        this.errorMessage = '';
+      },
+      error: () => {
+        this.errorMessage = 'Impossible de réordonner les colonnes.';
+        this.loadBoard();
+      }
+    });
   }
 
   saveNewColumn(): void {

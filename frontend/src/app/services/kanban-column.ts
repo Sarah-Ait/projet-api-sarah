@@ -17,4 +17,16 @@ export class KanbanColumnService {
   createColumn(name: string, userId: number): Observable<KanbanColumn> {
     return this.http.post<KanbanColumn>(this.apiUrl, { name, userId });
   }
+
+  updateColumn(id: number, name: string): Observable<KanbanColumn> {
+    return this.http.put<KanbanColumn>(`${this.apiUrl}/${id}`, { name });
+  }
+
+  deleteColumn(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  reorderColumns(orderedColumnIds: number[]): Observable<KanbanColumn[]> {
+    return this.http.put<KanbanColumn[]>(`${this.apiUrl}/reorder`, { orderedColumnIds });
+  }
 }

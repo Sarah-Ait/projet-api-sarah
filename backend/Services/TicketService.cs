@@ -30,6 +30,7 @@ namespace backend.Services
                 Description = ticket.Description,
                 TimeSpentHours = ticket.TimeSpentHours,
                 CreatedAt = ticket.CreatedAt,
+                AdminNote = ticket.AdminNote,
                 AssignedUserId = ticket.AssignedUserId,
                 KanbanColumnId = ticket.KanbanColumnId
             };
@@ -73,13 +74,17 @@ namespace backend.Services
             if (!_currentUserService.IsAdmin && kanbanColumn.UserId != _currentUserService.UserId)
                 throw new ForbiddenException("Vous ne pouvez pas créer un ticket dans cette colonne.");
 
+            var actingAsAdminForOther =
+                _currentUserService.IsAdmin && kanbanColumn.UserId != _currentUserService.UserId;
+
             var ticket = new Ticket
             {
                 Title = createTicketDto.Title,
                 Description = createTicketDto.Description,
                 TimeSpentHours = createTicketDto.TimeSpentHours,
                 AssignedUserId = kanbanColumn.UserId,
-                KanbanColumnId = createTicketDto.KanbanColumnId
+                KanbanColumnId = createTicketDto.KanbanColumnId,
+                AdminNote = actingAsAdminForOther ? "Créé par l'admin" : null
             };
 
             var createdTicket = await _ticketRepository.CreateAsync(ticket);
@@ -99,6 +104,11 @@ namespace backend.Services
             existingTicket.Title = updateTicketDto.Title;
             existingTicket.Description = updateTicketDto.Description;
             existingTicket.TimeSpentHours = updateTicketDto.TimeSpentHours;
+
+            if (_currentUserService.IsAdmin && existingTicket.AssignedUserId != _currentUserService.UserId)
+            {
+                existingTicket.AdminNote = "Modifié par l'admin";
+            }
 
             var updatedTicket = await _ticketRepository.UpdateAsync(existingTicket);
             return MapToTicketResponseDto(updatedTicket);

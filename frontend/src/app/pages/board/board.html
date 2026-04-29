@@ -100,15 +100,63 @@
         <h1>Tasks Board</h1>
       </div>
 
-      <div class="columns-container">
-        <div class="column-card" *ngFor="let column of columns">
+      <div
+        class="columns-container"
+        cdkDropList
+        cdkDropListOrientation="horizontal"
+        [cdkDropListData]="columns"
+        (cdkDropListDropped)="onColumnDrop($event)"
+      >
+        <div
+          class="column-card"
+          *ngFor="let column of columns"
+          cdkDrag
+          [cdkDragDisabled]="!isAdmin() || editingColumnId === column.id"
+        >
           <div class="column-header">
-            <div>
+            <div class="column-title" *ngIf="editingColumnId !== column.id">
               <h2>{{ column.name }}</h2>
               <p>{{ getTicketsByColumn(column.id).length }} tâche(s)</p>
             </div>
 
-            <span class="column-hours">{{ getTotalHoursByColumn(column.id) }} h</span>
+            <form
+              *ngIf="editingColumnId === column.id"
+              class="column-rename-form"
+              (ngSubmit)="saveEditColumn()"
+              (click)="$event.stopPropagation()"
+            >
+              <input
+                type="text"
+                name="editingColumnName"
+                [(ngModel)]="editingColumnName"
+                (keydown.escape)="cancelEditColumn()"
+                autofocus
+                required
+              />
+              <div class="column-rename-actions">
+                <button type="button" class="cancel-button" (click)="cancelEditColumn()">
+                  Annuler
+                </button>
+                <button type="submit" class="save-button">OK</button>
+              </div>
+            </form>
+
+            <span class="column-hours" *ngIf="editingColumnId !== column.id">
+              {{ getTotalHoursByColumn(column.id) }} h
+            </span>
+          </div>
+
+          <div class="column-actions" *ngIf="isAdmin() && editingColumnId !== column.id">
+            <button type="button" class="column-action-button" (click)="startEditColumn(column)">
+              Renommer
+            </button>
+            <button
+              type="button"
+              class="column-action-button delete"
+              (click)="deleteColumn(column)"
+            >
+              Supprimer
+            </button>
           </div>
 
           <div
@@ -135,6 +183,7 @@
 
               <div class="ticket-meta">
                 <span class="ticket-time">Est. {{ ticket.timeSpentHours }} h</span>
+                <span class="admin-note" *ngIf="ticket.adminNote">{{ ticket.adminNote }}</span>
               </div>
 
               <div class="ticket-actions">

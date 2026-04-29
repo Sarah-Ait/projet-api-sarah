@@ -12,6 +12,8 @@ public class Ticket
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+    public string? AdminNote { get; set; }
+
     public int AssignedUserId { get; set; }
 
     public User? AssignedUser { get; set; }

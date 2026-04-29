@@ -261,7 +261,12 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
+}
+
+.column-title {
+  flex: 1;
+  min-width: 0;
 }
 
 .column-header h2 {
@@ -269,12 +274,81 @@
   font-size: 16px;
   font-weight: 700;
   color: var(--color-text);
+  word-break: break-word;
 }
 
 .column-header p {
   margin: 4px 0 0;
   font-size: 12px;
   color: var(--color-text-secondary);
+}
+
+.column-rename-form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.column-rename-form input {
+  width: 100%;
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-size: 14px;
+  font-weight: 600;
+  background: var(--color-surface);
+}
+
+.column-rename-form input:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+.column-rename-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.column-rename-actions .cancel-button,
+.column-rename-actions .save-button {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+.column-actions {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.column-card:hover .column-actions {
+  opacity: 1;
+}
+
+.column-action-button {
+  border: none;
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-sm);
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.column-action-button:hover {
+  background: var(--color-primary-soft);
+  color: var(--color-primary-hover);
+}
+
+.column-action-button.delete:hover {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
 }
 
 .column-hours {
@@ -326,6 +400,9 @@
 }
 
 .ticket-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
   margin-bottom: 12px;
 }
 
@@ -333,6 +410,16 @@
   display: inline-block;
   background: var(--color-success-soft);
   color: var(--color-success-strong);
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.admin-note {
+  display: inline-block;
+  background: var(--color-primary-soft);
+  color: var(--color-primary-hover);
   padding: 4px 10px;
   border-radius: var(--radius-pill);
   font-size: 11px;

@@ -4,6 +4,7 @@ export interface Ticket {
   description: string;
   timeSpentHours: number;
   createdAt: string;
+  adminNote: string | null;
   assignedUserId: number;
   kanbanColumnId: number;
 }
