@@ -82,6 +82,24 @@ namespace backend.Services
             return MapToTicketResponseDto(createdTicket);
         }
 
+        public async Task<TicketResponseDto> UpdateTicketAsync(int id, UpdateTicketDto updateTicketDto)
+        {
+            var existingTicket = await _ticketRepository.GetByIdAsync(id);
+
+            if (existingTicket == null)
+                throw new NotFoundException($"Ticket with ID {id} not found");
+
+            if (!_currentUserService.IsAdmin && existingTicket.AssignedUserId != _currentUserService.UserId)
+                throw new UnauthorizedException("Vous ne pouvez pas modifier ce ticket.");
+
+            existingTicket.Title = updateTicketDto.Title;
+            existingTicket.Description = updateTicketDto.Description;
+            existingTicket.TimeSpentHours = updateTicketDto.TimeSpentHours;
+
+            var updatedTicket = await _ticketRepository.UpdateAsync(existingTicket);
+            return MapToTicketResponseDto(updatedTicket);
+        }
+
         public async Task<bool> DeleteTicketAsync(int id)
         {
             var existingTicket = await _ticketRepository.GetByIdAsync(id);

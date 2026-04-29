@@ -31,6 +31,13 @@ namespace backend.Repositories
             return ticket;
         }
 
+        public async Task<Ticket> UpdateAsync(Ticket ticket)
+        {
+            _context.Tickets.Update(ticket);
+            await _context.SaveChangesAsync();
+            return ticket;
+        }
+
         public async Task DeleteAsync(int id)
         {
             var ticket = await _context.Tickets.FindAsync(id);

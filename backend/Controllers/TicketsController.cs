@@ -39,6 +39,13 @@ namespace backend.Controllers
             return CreatedAtAction(nameof(GetTicketById), new { id = createdTicket.Id }, createdTicket);
         }
 
+        [HttpPut("{id}")]
+        public async Task<ActionResult<TicketResponseDto>> UpdateTicket(int id, UpdateTicketDto updateTicketDto)
+        {
+            var updatedTicket = await _ticketService.UpdateTicketAsync(id, updateTicketDto);
+            return Ok(updatedTicket);
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTicket(int id)
         {
