@@ -98,6 +98,14 @@
     <section class="kanban-section">
       <div class="section-header">
         <h1>Tasks Board</h1>
+        <div class="search-box">
+          <input
+            type="text"
+            name="search"
+            [(ngModel)]="searchTerm"
+            placeholder="Rechercher un ticket..."
+          />
+        </div>
       </div>
 
       <div

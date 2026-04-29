@@ -49,6 +49,8 @@ export class Board implements OnInit {
   editingColumnId: number | null = null;
   editingColumnName = '';
 
+  searchTerm = '';
+
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       const explicitUserId = params['userId'] ? Number(params['userId']) : null;
@@ -107,8 +109,17 @@ export class Board implements OnInit {
     });
   }
 
+  get filteredTickets(): Ticket[] {
+    const term = this.searchTerm.trim().toLowerCase();
+    if (!term) return this.tickets;
+    return this.tickets.filter(ticket =>
+      ticket.title.toLowerCase().includes(term) ||
+      (ticket.description?.toLowerCase().includes(term) ?? false)
+    );
+  }
+
   getTicketsByColumn(columnId: number): Ticket[] {
-    return this.tickets.filter(ticket => ticket.kanbanColumnId === columnId);
+    return this.filteredTickets.filter(ticket => ticket.kanbanColumnId === columnId);
   }
 
   getTotalHoursByColumn(columnId: number): number {
@@ -119,7 +130,7 @@ export class Board implements OnInit {
   }
 
   getTotalHours(): number {
-    return this.tickets.reduce((total, ticket) => total + ticket.timeSpentHours, 0);
+    return this.filteredTickets.reduce((total, ticket) => total + ticket.timeSpentHours, 0);
   }
 
   getColumnDropListId(columnId: number): string {

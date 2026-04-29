@@ -1,0 +1,40 @@
+services:
+  - type: web
+    name: kanbe-backend
+    runtime: docker
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /swagger
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Development
+      - key: ASPNETCORE_URLS
+        value: http://+:5065
+      - key: ConnectionStrings__Default
+        value: Data Source=/app/data/app.db
+      - key: Cors__AllowedOrigins__0
+        value: https://kanbe-frontend.onrender.com
+      - key: Jwt__Key
+        generateValue: true
+      - key: Jwt__Issuer
+        value: backend
+      - key: Jwt__Audience
+        value: frontend
+      - key: Jwt__AccessTokenExpiryMinutes
+        value: "15"
+      - key: Jwt__RefreshTokenExpiryDays
+        value: "30"
+      - key: SeedAdmin__Email
+        value: sarah@kanban.com
+      - key: SeedAdmin__Password
+        value: Sarah0552
+
+  - type: web
+    name: kanbe-frontend
+    runtime: docker
+    rootDir: frontend
+    dockerfilePath: ./Dockerfile
+    plan: free
+    dockerBuildArgs:
+      API_URL: https://kanbe-backend.onrender.com
