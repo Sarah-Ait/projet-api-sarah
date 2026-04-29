@@ -24,7 +24,7 @@
 
   <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
 
-  <div class="viewing-banner" *ngIf="viewingUserId !== null">
+  <div class="viewing-banner" *ngIf="isViewingOther">
     <span>
       Tu consultes le Kanban de
       <strong>{{ viewingUserName || 'cet utilisateur' }}</strong>

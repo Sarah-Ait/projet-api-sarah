@@ -51,21 +51,32 @@ export class Board implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
-      const userIdParam = params['userId'];
-      const parsedUserId = userIdParam ? Number(userIdParam) : null;
+      const explicitUserId = params['userId'] ? Number(params['userId']) : null;
+      const currentId = this.auth.getCurrentUserId();
 
-      this.viewingUserId = this.isAdmin() ? parsedUserId : null;
-      this.viewingUserName = null;
+      this.viewingUserId =
+        this.isAdmin() && explicitUserId !== null ? explicitUserId : currentId;
 
-      if (this.viewingUserId !== null) {
-        this.userService.getUserById(this.viewingUserId).subscribe({
+      const isViewingOther =
+        this.viewingUserId !== null && this.viewingUserId !== currentId;
+
+      if (isViewingOther) {
+        this.userService.getUserById(this.viewingUserId!).subscribe({
           next: user => (this.viewingUserName = user.name),
           error: () => (this.viewingUserName = null)
         });
+      } else {
+        this.viewingUserName = null;
       }
 
       this.loadBoard();
     });
+  }
+
+  get isViewingOther(): boolean {
+    return (
+      this.viewingUserId !== null && this.viewingUserId !== this.auth.getCurrentUserId()
+    );
   }
 
   exitViewing(): void {
